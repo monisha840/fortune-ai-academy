@@ -14,11 +14,11 @@ const Footer = () => {
           <div>
             <h4 className="font-display font-bold text-primary-foreground mb-3 text-sm tracking-wider uppercase">Courses</h4>
             <ul className="space-y-2 text-primary-foreground/50 text-sm">
-              <li>Full Stack Development</li>
-              <li>Data Science & ML</li>
-              <li>Digital Marketing</li>
-              <li>Cloud & DevOps</li>
               <li>UI/UX Design</li>
+              <li>Full Stack Development</li>
+              <li>Graphic Designing</li>
+              <li>Video Editing</li>
+              <li>Tally Prime</li>
             </ul>
           </div>
           <div>
@@ -28,7 +28,6 @@ const Footer = () => {
               <li>Coimbatore</li>
               <li>Salem</li>
               <li>Tiruppur</li>
-              <li>Chennai</li>
             </ul>
           </div>
           <div>

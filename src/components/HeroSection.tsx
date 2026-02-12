@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown } from "lucide-react";
 
@@ -6,12 +6,7 @@ const stats = [
   { label: "Students Trained", target: 10000, suffix: "+" },
   { label: "Placement Rate", target: 98.4, suffix: "%", decimal: true },
   { label: "Hiring Partners", target: 25, suffix: "+" },
-  { label: "Branches", target: 5, suffix: "" },
-];
-
-const companies = [
-  "TCS", "Infosys", "Wipro", "Cognizant", "HCL", "Accenture", "Zoho", "Freshworks",
-  "Tech Mahindra", "Capgemini", "IBM", "Amazon", "Mindtree", "L&T Infotech",
+  { label: "Branches", target: 4, suffix: "" },
 ];
 
 function AnimatedCounter({ target, suffix, decimal }: { target: number; suffix: string; decimal?: boolean }) {
@@ -50,10 +45,36 @@ function AnimatedCounter({ target, suffix, decimal }: { target: number; suffix: 
   );
 }
 
+function FloatingParticles() {
+  const particles = useMemo(() =>
+    Array.from({ length: 20 }, (_, i) => ({
+      id: i,
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      delay: Math.random() * 5,
+      duration: 4 + Math.random() * 4,
+      size: 2 + Math.random() * 3,
+    })), []);
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {particles.map((p) => (
+        <motion.div
+          key={p.id}
+          className="absolute rounded-full bg-accent/20"
+          style={{ left: p.left, top: p.top, width: p.size, height: p.size }}
+          animate={{ y: [-20, 20, -20], opacity: [0.2, 0.6, 0.2] }}
+          transition={{ duration: p.duration, delay: p.delay, repeat: Infinity, ease: "easeInOut" }}
+        />
+      ))}
+    </div>
+  );
+}
+
 const HeroSection = () => {
   return (
     <section id="hero" className="relative min-h-screen flex items-center justify-center gradient-navy-animated hero-grid overflow-hidden">
-      {/* Radial glow */}
+      <FloatingParticles />
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-accent/5 blur-[120px] pointer-events-none" />
 
       <div className="relative z-10 max-w-6xl mx-auto px-6 pt-24 pb-16 text-center">
@@ -92,7 +113,7 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.45 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12"
         >
           <a
             href="#demo"
@@ -108,38 +129,44 @@ const HeroSection = () => {
           </a>
         </motion.div>
 
+        {/* Trust strip */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.55 }}
+          className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-primary-foreground/50 text-sm font-medium mb-14"
+        >
+          <span>98.4% Placement</span>
+          <span className="hidden sm:inline text-accent/40">|</span>
+          <span>10,000+ Students</span>
+          <span className="hidden sm:inline text-accent/40">|</span>
+          <span>25+ Hiring Partners</span>
+          <span className="hidden sm:inline text-accent/40">|</span>
+          <span>4 Branches</span>
+        </motion.div>
+
         {/* Stats */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 max-w-3xl mx-auto mb-16"
+          className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 max-w-3xl mx-auto"
         >
-          {stats.map((s) => (
-            <div key={s.label} className="text-center">
+          {stats.map((s, i) => (
+            <motion.div
+              key={s.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.7 + i * 0.1 }}
+              className="text-center"
+            >
               <div className="text-3xl md:text-4xl font-display font-bold text-accent gold-glow">
                 <AnimatedCounter target={s.target} suffix={s.suffix} decimal={s.decimal} />
               </div>
               <div className="text-primary-foreground/60 text-sm mt-1">{s.label}</div>
-            </div>
+            </motion.div>
           ))}
         </motion.div>
-
-        {/* Company ticker */}
-        <div className="relative overflow-hidden max-w-4xl mx-auto">
-          <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-primary to-transparent z-10" />
-          <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-primary to-transparent z-10" />
-          <div className="flex animate-scroll-left whitespace-nowrap">
-            {[...companies, ...companies].map((c, i) => (
-              <span
-                key={i}
-                className="inline-block px-8 py-2 text-primary-foreground/40 font-semibold text-sm tracking-wider"
-              >
-                {c}
-              </span>
-            ))}
-          </div>
-        </div>
 
         <motion.div
           initial={{ opacity: 0 }}

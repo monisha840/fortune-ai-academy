@@ -6,7 +6,6 @@ const branches = [
   { city: "Coimbatore", address: "45, RS Puram, Coimbatore - 641002", phone: "+91 94433 00002" },
   { city: "Salem", address: "78, Junction Main Road, Salem - 636007", phone: "+91 94433 00003" },
   { city: "Tiruppur", address: "12, College Road, Tiruppur - 641601", phone: "+91 94433 00004" },
-  { city: "Chennai", address: "56, Nungambakkam High Rd, Chennai - 600034", phone: "+91 94433 00005" },
 ];
 
 const BranchSection = () => {
@@ -21,11 +20,11 @@ const BranchSection = () => {
         >
           <p className="text-accent font-semibold tracking-widest uppercase text-sm mb-3">Our Network</p>
           <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground">
-            5 Branches Across <span className="text-gradient-gold">Tamil Nadu</span>
+            4 Branches Across <span className="text-gradient-gold">Tamil Nadu</span>
           </h2>
         </motion.div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {branches.map((b, i) => (
             <motion.div
               key={b.city}

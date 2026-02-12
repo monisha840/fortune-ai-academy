@@ -76,11 +76,14 @@ const DemoSection = () => {
                 className="w-full bg-primary/50 border border-secondary rounded-lg px-4 py-3 text-primary-foreground focus:outline-none focus:border-accent transition-colors"
               >
                 <option value="">Select a course</option>
-                <option>Full Stack Web Development</option>
-                <option>Data Science & Machine Learning</option>
-                <option>Digital Marketing & SEO</option>
-                <option>Cloud Computing & DevOps</option>
                 <option>UI/UX Design</option>
+                <option>Full Stack Development</option>
+                <option>Graphic Designing</option>
+                <option>Video Editing</option>
+                <option>Textile & Garment Design</option>
+                <option>Packaging Design</option>
+                <option>Fashion CADD</option>
+                <option>Tally Prime</option>
               </select>
             </div>
 
@@ -97,7 +100,6 @@ const DemoSection = () => {
                 <option>Coimbatore</option>
                 <option>Salem</option>
                 <option>Tiruppur</option>
-                <option>Chennai</option>
               </select>
             </div>
 
