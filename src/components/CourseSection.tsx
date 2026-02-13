@@ -1,97 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-
-const categories = ["All", "Design", "Development", "Commerce"] as const;
-
-const courses = [
-  {
-    title: "UI/UX Design",
-    shortTitle: "UI/UX",
-    category: "Design",
-    overview: "Design user-centered digital experiences from wireframes to high-fidelity prototypes.",
-    tools: ["Figma", "Adobe XD", "Illustrator", "Principle", "Maze"],
-    duration: "4 Months",
-    roles: "UI Designer, UX Designer, Product Designer",
-    salary: "₹5–12 LPA",
-    featured: true,
-  },
-  {
-    title: "Full Stack Development",
-    shortTitle: "Full Stack",
-    category: "Development",
-    overview: "Master front-end and back-end technologies to build complete web applications from scratch.",
-    tools: ["React", "Node.js", "MongoDB", "Express", "TypeScript", "Git"],
-    duration: "6 Months",
-    roles: "Full Stack Developer, Frontend Developer, Backend Developer",
-    salary: "₹6–14 LPA",
-    featured: true,
-  },
-  {
-    title: "Graphic Designing",
-    shortTitle: "Graphics",
-    category: "Design",
-    overview: "Create stunning visual content for brands, marketing campaigns, and digital media.",
-    tools: ["Photoshop", "Illustrator", "InDesign", "CorelDRAW", "Canva"],
-    duration: "4 Months",
-    roles: "Graphic Designer, Brand Designer, Visual Designer",
-    salary: "₹4–10 LPA",
-  },
-  {
-    title: "Video Editing",
-    shortTitle: "Video",
-    category: "Design",
-    overview: "Master professional video editing, motion graphics, and post-production workflows.",
-    tools: ["Premiere Pro", "After Effects", "DaVinci Resolve", "Final Cut Pro"],
-    duration: "4 Months",
-    roles: "Video Editor, Motion Designer, Content Creator",
-    salary: "₹4–10 LPA",
-  },
-  {
-    title: "Textile & Garment Design",
-    shortTitle: "Textile",
-    category: "Design",
-    overview: "Learn textile science, pattern making, and garment construction for the fashion industry.",
-    tools: ["CAD Software", "Pattern Drafting", "Textile Testing", "Adobe Illustrator"],
-    duration: "5 Months",
-    roles: "Textile Designer, Garment Technologist, Fashion Designer",
-    salary: "₹4–8 LPA",
-  },
-  {
-    title: "Packaging Design",
-    shortTitle: "Packaging",
-    category: "Design",
-    overview: "Design compelling packaging that stands out on shelves with structural and graphic expertise.",
-    tools: ["ArtPro", "Illustrator", "Photoshop", "Esko Studio", "3D Mockups"],
-    duration: "4 Months",
-    roles: "Packaging Designer, Structural Designer, Print Specialist",
-    salary: "₹4–9 LPA",
-  },
-  {
-    title: "Fashion CADD",
-    shortTitle: "CADD",
-    category: "Design",
-    overview: "Master computer-aided design for fashion with industry-standard tools and techniques.",
-    tools: ["AutoCAD", "Richpeace", "Gerber", "Lectra", "CLO 3D"],
-    duration: "4 Months",
-    roles: "Fashion CAD Designer, Pattern Maker, Technical Designer",
-    salary: "₹4–8 LPA",
-  },
-  {
-    title: "Tally Prime",
-    shortTitle: "Tally",
-    category: "Commerce",
-    overview: "Master Tally Prime for GST accounting, payroll, inventory, and financial reporting.",
-    tools: ["Tally Prime", "GST Portal", "Excel", "Banking Software"],
-    duration: "3 Months",
-    roles: "Accountant, Tax Consultant, Finance Executive",
-    salary: "₹3–7 LPA",
-  },
-];
+import { courses, categories } from "@/lib/constants";
 
 const CourseSection = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeCategory, setActiveCategory] = useState<string>("All");
+
+  useEffect(() => {
+    const handleCourseSelect = (e: CustomEvent<{ title: string }>) => {
+      const index = courses.findIndex(c => c.title === e.detail.title);
+      if (index !== -1) {
+        setActiveCategory("All"); // Reset category to show all so index is correct
+        setTimeout(() => setActiveIndex(index), 0); // Slight delay to ensure category reset
+      }
+    };
+
+    window.addEventListener('courseSelected' as any, handleCourseSelect);
+    return () => window.removeEventListener('courseSelected' as any, handleCourseSelect);
+  }, []);
 
   const filtered = activeCategory === "All" ? courses : courses.filter((c) => c.category === activeCategory);
   const activeCourse = filtered[activeIndex] || filtered[0];
@@ -127,11 +54,10 @@ const CourseSection = () => {
             <button
               key={cat}
               onClick={() => handleCategoryChange(cat)}
-              className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
-                activeCategory === cat
+              className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${activeCategory === cat
                   ? "bg-accent text-accent-foreground gold-glow-box"
                   : "border border-border text-muted-foreground hover:border-accent hover:text-accent"
-              }`}
+                }`}
             >
               {cat}
             </button>
@@ -146,11 +72,10 @@ const CourseSection = () => {
               <button
                 key={course.title}
                 onClick={() => setActiveIndex(i)}
-                className={`w-full text-left px-5 py-4 rounded-xl transition-all duration-300 group relative ${
-                  activeIndex === i
+                className={`w-full text-left px-5 py-4 rounded-xl transition-all duration-300 group relative ${activeIndex === i
                     ? "bg-secondary border border-accent/30"
                     : "hover:bg-secondary/50"
-                }`}
+                  }`}
               >
                 {activeIndex === i && (
                   <motion.div
@@ -159,9 +84,8 @@ const CourseSection = () => {
                   />
                 )}
                 <span
-                  className={`font-display text-base font-bold transition-colors duration-200 ${
-                    activeIndex === i ? "text-accent" : "text-primary-foreground/80 group-hover:text-primary-foreground"
-                  }`}
+                  className={`font-display text-base font-bold transition-colors duration-200 ${activeIndex === i ? "text-accent" : "text-primary-foreground/80 group-hover:text-primary-foreground"
+                    }`}
                 >
                   {course.title}
                 </span>

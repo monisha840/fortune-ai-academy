@@ -74,8 +74,23 @@ function FloatingParticles() {
 const HeroSection = () => {
   return (
     <section id="hero" className="relative min-h-screen flex items-center justify-center gradient-navy-animated hero-grid overflow-hidden">
+      {/* Background Video */}
+      <motion.video
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="metadata"
+        initial={{ scale: 1 }}
+        animate={{ scale: 1.05 }}
+        transition={{ duration: 12, repeat: Infinity, repeatType: "reverse", ease: "linear" }}
+        className="absolute inset-0 w-full h-full object-cover z-0 opacity-[0.35] pointer-events-none"
+      >
+        <source src="/hero-video.mp4" type="video/mp4" />
+      </motion.video>
+
       <FloatingParticles />
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-accent/5 blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-accent/5 blur-[120px] pointer-events-none z-0" />
 
       <div className="relative z-10 max-w-6xl mx-auto px-6 pt-24 pb-16 text-center">
         <motion.p
