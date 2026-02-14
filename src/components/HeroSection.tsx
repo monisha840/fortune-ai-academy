@@ -131,7 +131,7 @@ const HeroSection = () => {
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12"
         >
           <a
-            href="#demo"
+            href="/apply"
             className="bg-accent text-accent-foreground px-8 py-3.5 rounded-lg font-semibold text-lg hover-scale gold-glow-box flex items-center gap-2 transition-all duration-300"
           >
             Book Free Demo <ArrowRight size={18} />

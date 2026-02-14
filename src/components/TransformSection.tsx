@@ -46,7 +46,7 @@ const TransformSection = () => {
                 </motion.h2>
             </div>
 
-            <div className="flex flex-col md:flex-row w-full h-[600px] md:h-[500px] gap-2 px-2">
+            <div className="flex flex-col md:flex-row w-full h-[500px] md:h-[420px] gap-2 px-2">
                 {panels.map((panel, i) => (
                     <motion.div
                         key={i}
@@ -55,7 +55,7 @@ const TransformSection = () => {
                         whileHover={{ flexGrow: 4 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6, ease: [0.2, 0, 0.2, 1] }}
-                        className={`group relative overflow-hidden rounded-2xl cursor-pointer flex flex-col justify-end p-8 md:p-12 transition-all duration-500`}
+                        className={`group relative overflow-hidden rounded-2xl cursor-pointer flex flex-col justify-end p-6 md:p-8 transition-all duration-500`}
                     >
                         {/* Background Image/Gradient */}
                         <div className="absolute inset-0 bg-navy-deep border-x border-white/5 transition-colors group-hover:bg-accent/5" />

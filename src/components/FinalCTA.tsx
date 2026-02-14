@@ -107,19 +107,24 @@ const FinalCTA = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-white/70 text-xs font-bold uppercase tracking-widest ml-1">Course</label>
-                  <select className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white focus:outline-none focus:border-accent/50 focus:bg-white/10 transition-all appearance-none">
-                    <option className="bg-navy">Select Course</option>
-                    <option className="bg-navy">Full Stack Development</option>
-                    <option className="bg-navy">UI/UX Design</option>
-                    <option className="bg-navy">Video Editing</option>
+                  <select className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white focus:outline-none focus:border-accent/50 focus:bg-white/10 transition-all appearance-none cursor-pointer">
+                    <option className="bg-navy" value="UI/UX Design">UI/UX Design</option>
+                    <option className="bg-navy" value="Full Stack Development">Full Stack Development</option>
+                    <option className="bg-navy" value="Graphic Designing">Graphic Designing</option>
+                    <option className="bg-navy" value="Video Editing">Video Editing</option>
+                    <option className="bg-navy" value="Textile & Garment Design">Textile & Garment Design</option>
+                    <option className="bg-navy" value="Packaging Design">Packaging Design</option>
+                    <option className="bg-navy" value="Fashion CADD">Fashion CADD</option>
+                    <option className="bg-navy" value="Tally Prime">Tally Prime</option>
                   </select>
                 </div>
                 <div className="space-y-2">
                   <label className="text-white/50 text-xs font-bold uppercase tracking-widest ml-1">Branch</label>
-                  <select className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white focus:outline-none focus:border-accent/50 focus:bg-white/10 transition-all appearance-none">
-                    <option className="bg-navy">Select Branch</option>
-                    <option className="bg-navy">Hosur</option>
-                    <option className="bg-navy">Bangalore</option>
+                  <select className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white focus:outline-none focus:border-accent/50 focus:bg-white/10 transition-all appearance-none cursor-pointer">
+                    <option className="bg-navy" value="Erode">Erode</option>
+                    <option className="bg-navy" value="Coimbatore">Coimbatore</option>
+                    <option className="bg-navy" value="Salem">Salem</option>
+                    <option className="bg-navy" value="Tiruppur">Tiruppur</option>
                   </select>
                 </div>
               </div>

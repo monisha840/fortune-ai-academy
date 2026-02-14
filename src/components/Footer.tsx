@@ -7,12 +7,12 @@ const Footer = () => {
   ];
 
   const socialLinks = [
-    { icon: Facebook, href: "#" },
-    { icon: Twitter, href: "#" },
-    { icon: Instagram, href: "#" },
-    { icon: Youtube, href: "#" },
-    { icon: Mail, href: "#" }, // Representing WhatsApp/General contact
-    { icon: Linkedin, href: "#" },
+    { icon: Facebook, href: "https://www.facebook.com/people/Professional-graphic-design-institute/100063905569020/", label: "Facebook" },
+    { icon: Twitter, href: "https://x.com/fmpl_delhi?lang=en", label: "Twitter" },
+    { icon: Instagram, href: "https://www.instagram.com/fortune_innovatives/?hl=en", label: "Instagram" },
+    { icon: Youtube, href: "https://www.youtube.com/@fortuneinnovatives7705", label: "YouTube" },
+    { icon: Mail, href: "mailto:ind.fortuneinnovatives@gmail.com", label: "Email" },
+    { icon: Linkedin, href: "https://in.linkedin.com/company/fortune-innovatives", label: "LinkedIn" },
   ];
 
   return (
@@ -93,6 +93,9 @@ const Footer = () => {
                 <a
                   key={idx}
                   href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.label}
                   className="w-10 h-10 bg-white rounded-md flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] shadow-lg group"
                 >
                   <social.icon className="w-5 h-5 text-[#0B1C2D]" />

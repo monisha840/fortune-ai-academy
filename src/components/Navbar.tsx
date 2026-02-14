@@ -5,12 +5,11 @@ import { courses } from "@/lib/constants";
 
 const navLinks = [
   { label: "Home", href: "#hero" },
-  { label: "Journey", href: "#journey" },
   { label: "Why Us", href: "#why-us" },
   { label: "Placements", href: "#placements" },
   { label: "Courses", href: "#courses", hasDropdown: true },
   { label: "Branches", href: "#branches" },
-  { label: "FAQ", href: "#faq" },
+  { label: "Contact", href: "#demo" },
 ];
 
 const Navbar = () => {
@@ -36,7 +35,7 @@ const Navbar = () => {
       }`}>
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         <a href="#hero" className="font-display text-2xl font-black text-white tracking-tighter">
-          FORTUNE <span className="text-[#D4AF37]">ACADEMY</span>
+          FORTUNE <span className="text-[#D4AF37]">INNOVATIVES</span>
         </a>
 
         {/* Desktop */}
@@ -97,7 +96,7 @@ const Navbar = () => {
             </div>
           ))}
           <a
-            href="#faq"
+            href="/apply"
             className="bg-[#D4AF37] text-[#0B1C2D] px-6 py-2.5 rounded-full text-sm font-bold hover:scale-105 transition-all duration-300 shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:shadow-[0_0_30px_rgba(212,175,55,0.5)]"
           >
             Get Started

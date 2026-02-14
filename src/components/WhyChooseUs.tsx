@@ -189,17 +189,7 @@ const WhyChooseUs = () => {
                   </motion.div>
                 ))}
 
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.6 }}
-                  className="pt-6"
-                >
-                  <button className="text-accent font-bold flex items-center gap-2 group hover:gap-4 transition-all">
-                    Learn more about our transformation process
-                    <motion.span animate={{ x: [0, 5, 0] }} transition={{ repeat: Infinity }}>→</motion.span>
-                  </button>
-                </motion.div>
+
               </div>
             </motion.div>
           </AnimatePresence>

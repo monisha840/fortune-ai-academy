@@ -55,8 +55,8 @@ const CourseSection = () => {
               key={cat}
               onClick={() => handleCategoryChange(cat)}
               className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${activeCategory === cat
-                  ? "bg-accent text-accent-foreground gold-glow-box"
-                  : "border border-border text-muted-foreground hover:border-accent hover:text-accent"
+                ? "bg-accent text-accent-foreground gold-glow-box"
+                : "border border-border text-muted-foreground hover:border-accent hover:text-accent"
                 }`}
             >
               {cat}
@@ -73,8 +73,8 @@ const CourseSection = () => {
                 key={course.title}
                 onClick={() => setActiveIndex(i)}
                 className={`w-full text-left px-5 py-4 rounded-xl transition-all duration-300 group relative ${activeIndex === i
-                    ? "bg-secondary border border-accent/30"
-                    : "hover:bg-secondary/50"
+                  ? "bg-secondary border border-accent/30"
+                  : "hover:bg-secondary/50"
                   }`}
               >
                 {activeIndex === i && (
@@ -102,7 +102,7 @@ const CourseSection = () => {
           {/* Right: Course details */}
           <div className="relative bg-background p-8 md:p-12 flex flex-col justify-center overflow-hidden">
             {/* Large faded background text */}
-            <div className="absolute top-1/2 right-4 -translate-y-1/2 font-display text-[120px] md:text-[180px] font-bold text-foreground/[0.03] leading-none select-none pointer-events-none whitespace-nowrap">
+            <div className="absolute top-1/2 right-4 -translate-y-1/2 font-display text-[120px] md:text-[180px] font-bold text-foreground/[0.08] leading-none select-none pointer-events-none whitespace-nowrap">
               {activeCourse.shortTitle}
             </div>
 
@@ -162,7 +162,7 @@ const CourseSection = () => {
                 </div>
 
                 <a
-                  href="#demo"
+                  href="/apply"
                   className="inline-flex items-center gap-2 bg-accent text-accent-foreground px-6 py-3 rounded-lg font-semibold hover-scale gold-glow-box transition-all duration-300"
                 >
                   Enroll Now <ArrowRight size={16} />

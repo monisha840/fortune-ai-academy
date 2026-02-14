@@ -148,20 +148,61 @@ const JourneySection = () => {
                   </feMerge>
                 </filter>
               </defs>
-              <motion.path
+
+              {/* Static faint path */}
+              <path
                 d="M 50,100 Q 200,50 350,100"
                 fill="transparent"
                 stroke="url(#goldGradient)"
-                strokeWidth="4"
-                strokeDasharray="10, 5"
-                style={{ pathLength }}
-                filter="url(#glow)"
+                strokeWidth="2"
+                strokeDasharray="5, 5"
+                className="opacity-30"
               />
+
+              {/* Main Moving Dot */}
               <motion.circle
                 r="6"
                 fill="#F5C15D"
                 filter="url(#glow)"
-                style={{ offsetPath: "path('M 50,100 Q 200,50 350,100')", offsetDistance: pathLength.get() * 100 + "%" }}
+                style={{ offsetPath: "path('M 50,100 Q 200,50 350,100')" }}
+                animate={{ offsetDistance: ["0%", "100%"] }}
+                transition={{
+                  duration: 3.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              />
+
+              {/* Trail Dot 1 (Slightly behind, smaller, lower opacity) */}
+              <motion.circle
+                r="4"
+                fill="#F5C15D"
+                filter="url(#glow)"
+                style={{ offsetPath: "path('M 50,100 Q 200,50 350,100')" }}
+                animate={{ offsetDistance: ["0%", "100%"] }}
+                transition={{
+                  duration: 3.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 0.1
+                }}
+                className="opacity-60"
+              />
+
+              {/* Trail Dot 2 */}
+              <motion.circle
+                r="2"
+                fill="#F5C15D"
+                filter="url(#glow)"
+                style={{ offsetPath: "path('M 50,100 Q 200,50 350,100')" }}
+                animate={{ offsetDistance: ["0%", "100%"] }}
+                transition={{
+                  duration: 3.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 0.2
+                }}
+                className="opacity-30"
               />
             </svg>
           </div>
