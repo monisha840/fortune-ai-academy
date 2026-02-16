@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 function ParticleBackground() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -177,11 +178,11 @@ const EmpowermentArena = () => {
                     className="text-center mt-20"
                 >
                     <h3 className="text-2xl md:text-3xl font-bold text-white mb-8">Step Into Your Future With Confidence</h3>
-                    <button className="group relative px-10 py-4 bg-[#D4AF37] text-[#0B1C2D] font-bold rounded-full overflow-hidden transition-all duration-300 hover:bg-[#0B1C2D] hover:text-[#D4AF37] shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:shadow-[0_0_40px_rgba(212,175,55,0.5)] active:scale-95">
+                    <Link to="/apply" className="group relative px-10 py-4 bg-[#D4AF37] text-[#0B1C2D] font-bold rounded-full overflow-hidden transition-all duration-300 hover:bg-[#0B1C2D] hover:text-[#D4AF37] shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:shadow-[0_0_40px_rgba(212,175,55,0.5)] active:scale-95 inline-block">
                         <span className="relative z-10 flex items-center justify-center gap-2">
                             Become Part of the Arena <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
                         </span>
-                    </button>
+                    </Link>
                 </motion.div>
             </div>
         </section>

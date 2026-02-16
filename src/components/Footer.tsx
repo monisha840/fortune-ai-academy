@@ -50,7 +50,7 @@ const Footer = () => {
               <div className="w-12 h-1 bg-[#D4AF37] mb-8 rounded-full relative z-10" />
 
               <div className="space-y-8 relative z-10">
-                <div className="flex items-start gap-4">
+                <div className="flex items-start gap-4 cursor-pointer">
                   <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shrink-0">
                     <Phone className="w-5 h-5 text-[#0B1C2D]" />
                   </div>
@@ -60,7 +60,7 @@ const Footer = () => {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
+                <div className="flex items-start gap-4 cursor-pointer">
                   <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shrink-0">
                     <Phone className="w-5 h-5 text-[#0B1C2D]" />
                   </div>
@@ -70,7 +70,7 @@ const Footer = () => {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
+                <div className="flex items-start gap-4 cursor-pointer">
                   <div className="w-10 h-10 rounded-full bg-[#10B981] flex items-center justify-center shrink-0">
                     <Mail className="w-5 h-5 text-white" />
                   </div>
@@ -107,7 +107,7 @@ const Footer = () => {
 
         <div className="mt-20 pt-8 border-t border-white/5 text-center">
           <p className="text-white/30 text-xs">
-            © {new Date().getFullYear()} Fortune Innovatives. All Rights Reserved.
+            © {new Date().getFullYear()} Fortune Innovatives. All Rights Reserved. <span className="mx-2">|</span> Powered by Sirah Digital
           </p>
         </div>
       </div>

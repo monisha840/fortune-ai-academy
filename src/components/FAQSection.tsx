@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Minus, HelpCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const faqs = [
     {
@@ -58,18 +59,18 @@ const FAQSection = () => {
                                 Everything you need to know about our programs, placements, and how to start your journey with us.
                             </p>
 
-                            <div className="bg-white/5 backdrop-blur-md rounded-3xl p-8 border border-white/10 relative overflow-hidden group">
+                            <Link to="/apply" className="block bg-white/5 backdrop-blur-md rounded-3xl p-8 border border-white/10 relative overflow-hidden group hover:border-[#D4AF37]/50 transition-colors duration-300">
                                 <div className="absolute inset-0 bg-gradient-to-br from-[#D4AF37]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                                 <div className="flex items-center gap-6 relative z-10">
-                                    <div className="w-16 h-16 rounded-2xl bg-[#D4AF37] flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(212,175,55,0.3)]">
+                                    <div className="w-16 h-16 rounded-2xl bg-[#D4AF37] flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(212,175,55,0.3)] group-hover:scale-110 transition-transform duration-300">
                                         <HelpCircle className="w-8 h-8 text-[#0B1C2D]" />
                                     </div>
                                     <div>
-                                        <h4 className="text-white font-bold text-lg">Still have questions?</h4>
-                                        <p className="text-white/40 text-sm">Reach out to our experts anytime.</p>
+                                        <h4 className="text-white font-bold text-lg group-hover:text-[#D4AF37] transition-colors">Still have questions?</h4>
+                                        <p className="text-white/40 text-sm group-hover:text-white/60 transition-colors">Reach out to our experts anytime.</p>
                                     </div>
                                 </div>
-                            </div>
+                            </Link>
                         </motion.div>
                     </div>
 
@@ -85,8 +86,8 @@ const FAQSection = () => {
                                     viewport={{ once: true }}
                                     transition={{ delay: idx * 0.1 }}
                                     className={`group relative rounded-[2rem] transition-all duration-500 ${isOpen
-                                            ? "bg-white/[0.04] border-[#D4AF37]/40 shadow-[0_20px_40px_rgba(0,0,0,0.3)]"
-                                            : "bg-white/[0.02] border-white/5 hover:bg-white/[0.03] hover:border-white/10"
+                                        ? "bg-white/[0.04] border-[#D4AF37]/40 shadow-[0_20px_40px_rgba(0,0,0,0.3)]"
+                                        : "bg-white/[0.02] border-white/5 hover:bg-white/[0.03] hover:border-white/10"
                                         } border`}
                                 >
                                     <button
