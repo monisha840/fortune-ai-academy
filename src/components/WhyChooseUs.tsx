@@ -140,56 +140,52 @@ const WhyChooseUs = () => {
               className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
             >
               {/* Left Column: Visual & Transformation Copy */}
-              <div className="relative p-8 md:p-12 rounded-[2.5rem] glass-morphism bg-white/5 border-white/10 overflow-hidden group">
+              <div className="relative p-5 md:p-12 rounded-2xl md:rounded-[2.5rem] glass-morphism bg-white/5 border-white/10 overflow-hidden group">
                 {/* Dynamic Background Accent */}
                 <div className={`absolute inset-0 bg-gradient-to-br ${data.accent} opacity-30 transition-all duration-700`} />
 
-                <div className="relative z-10">
+                <div className="relative z-10 text-left">
                   <motion.div
                     initial={{ rotate: -10, scale: 0.8 }}
                     animate={{ rotate: 0, scale: 1 }}
-                    className="w-16 h-16 rounded-2xl bg-accent/20 flex items-center justify-center mb-6"
+                    className="w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-accent/20 flex items-center justify-center mb-4 md:mb-6"
                   >
-                    <data.icon className="text-accent" size={32} />
+                    <data.icon className="text-accent w-6 h-6 md:w-8 md:h-8" />
                   </motion.div>
-                  <h3 className="font-display text-3xl md:text-4xl font-bold text-white mb-6">
+                  <h3 className="font-display text-2xl md:text-4xl font-bold text-white mb-3 md:mb-6">
                     {data.title}
                   </h3>
-                  <p className="text-white/80 text-lg leading-relaxed mb-8">
+                  <p className="text-white/80 text-sm md:text-lg leading-relaxed mb-4 md:mb-8">
                     {data.desc}
                   </p>
 
-                  <div className="flex items-center gap-4 text-accent">
-                    <div className="px-4 py-2 rounded-lg bg-accent/10 border border-accent/20 font-bold text-sm">
+                  <div className="flex items-center gap-3 text-accent">
+                    <div className="px-3 py-1.5 rounded-lg bg-accent/10 border border-accent/20 font-bold text-[10px] md:text-sm">
                       100% Outcome Focused
                     </div>
-                    <Star className="fill-accent animate-spin" style={{ animationDuration: '3s' }} size={20} />
+                    <Star className="fill-accent animate-spin w-4 h-4 md:w-5 md:h-5" style={{ animationDuration: '3s' }} />
                   </div>
                 </div>
               </div>
 
               {/* Right Column: Benefit Points */}
-              <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-1 md:space-y-4 md:gap-0">
                 {data.benefits.map((benefit, i) => (
                   <motion.div
                     key={i}
                     initial={{ opacity: 0, x: 30 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.1 + 0.2 }}
-                    className="p-6 rounded-2xl bg-white/5 border border-white/5 hover:border-accent/30 hover:bg-white/10 transition-all group"
+                    className="p-3 md:p-6 rounded-xl md:rounded-2xl bg-white/5 border border-white/5 hover:border-accent/30 hover:bg-white/10 transition-all group flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4"
                   >
-                    <div className="flex items-center gap-4">
-                      <div className="shrink-0 w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center group-hover:bg-accent text-accent group-hover:text-navy transition-all">
-                        <CheckCircle2 size={24} />
-                      </div>
-                      <span className="text-lg md:text-xl font-medium text-white">
-                        {benefit}
-                      </span>
+                    <div className="shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full bg-accent/10 flex items-center justify-center group-hover:bg-accent text-accent group-hover:text-navy transition-all">
+                      <CheckCircle2 className="w-4 h-4 md:w-6 md:h-6" />
                     </div>
+                    <span className="text-xs md:text-xl font-medium text-white leading-tight">
+                      {benefit}
+                    </span>
                   </motion.div>
                 ))}
-
-
               </div>
             </motion.div>
           </AnimatePresence>

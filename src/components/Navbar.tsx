@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { courses } from "@/lib/constants";
+import logo from "@/assets/logo.png";
 
 const navLinks = [
   { label: "Home", href: "#hero" },
@@ -34,8 +35,15 @@ const Navbar = () => {
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-[#0B1C2D]/95 backdrop-blur-md border-b border-white/10 py-3" : "bg-transparent py-5"
       }`}>
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-        <a href="#hero" className="font-display text-2xl font-black text-white tracking-tighter">
-          FORTUNE <span className="text-[#D4AF37]">INNOVATIVES</span>
+        <a href="#hero" className="flex items-center gap-2 md:gap-3 group">
+          <img
+            src={logo}
+            alt="Fortune Innovatives"
+            className="h-8 md:h-10 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
+          />
+          <span className="font-display text-xl md:text-2xl font-black text-white tracking-tighter">
+            FORTUNE <span className="text-[#D4AF37]">INNOVATIVES</span>
+          </span>
         </a>
 
         {/* Desktop */}

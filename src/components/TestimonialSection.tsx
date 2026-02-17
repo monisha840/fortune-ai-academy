@@ -113,34 +113,34 @@ const TestimonialSection = () => {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: direction * -100 }}
               transition={{ duration: 0.5, ease: "anticipate" }}
-              className="glass-morphism bg-white/5 border-white/10 rounded-[2.5rem] p-8 md:p-16 relative gold-glow-box"
+              className="glass-morphism bg-white/5 border-white/10 rounded-2xl md:rounded-[2.5rem] p-6 md:p-16 relative gold-glow-box"
             >
-              <Quote className="absolute top-12 left-12 text-accent/10 w-24 h-24 -z-10" />
+              <Quote className="absolute top-6 left-6 md:top-12 md:left-12 text-accent/10 w-12 h-12 md:w-24 md:h-24 -z-10" />
 
-              <div className="flex flex-col md:flex-row items-center gap-12">
+              <div className="flex flex-col md:flex-row items-center gap-6 md:gap-12">
                 {/* Profile Image Area */}
                 <div className="relative shrink-0">
-                  <div className="w-32 h-32 md:w-48 md:h-48 rounded-full border-4 border-accent p-2 relative">
+                  <div className="w-20 h-20 md:w-48 md:h-48 rounded-full border-2 md:border-4 border-accent p-1 md:p-2 relative">
                     <div className="w-full h-full rounded-full bg-navy-deep flex items-center justify-center overflow-hidden">
-                      <span className="text-5xl md:text-7xl font-display font-bold text-accent/40">{t.name[0]}</span>
+                      <span className="text-3xl md:text-7xl font-display font-bold text-accent/40">{t.name[0]}</span>
                     </div>
                   </div>
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="absolute -bottom-2 -right-2 bg-emerald-500 text-white p-2 rounded-full shadow-lg border-2 border-navy"
+                    className="absolute -bottom-1 -right-1 md:-bottom-2 md:-right-2 bg-emerald-500 text-white p-1 md:p-2 rounded-full shadow-lg border-2 border-navy"
                   >
-                    <CheckCircle size={20} />
+                    <CheckCircle className="w-4 h-4 md:w-5 md:h-5" />
                   </motion.div>
                 </div>
 
                 {/* Content Area */}
                 <div className="flex-1 text-center md:text-left">
-                  <div className="flex items-center justify-center md:justify-start gap-1 mb-4 text-accent">
-                    {[...Array(5)].map((_, i) => <Star key={i} size={18} fill="currentColor" />)}
+                  <div className="flex items-center justify-center md:justify-start gap-1 mb-3 md:mb-4 text-accent">
+                    {[...Array(5)].map((_, i) => <Star key={i} className="w-3 h-3 md:w-4 md:h-4" fill="currentColor" />)}
                   </div>
 
-                  <blockquote className="text-xl md:text-3xl font-medium text-white/90 leading-snug mb-8">
+                  <blockquote className="text-base md:text-3xl font-medium text-white/90 leading-snug mb-6 md:mb-8">
                     "{t.text}"
                   </blockquote>
 

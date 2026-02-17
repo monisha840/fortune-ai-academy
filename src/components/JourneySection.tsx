@@ -46,7 +46,7 @@ const JourneySection = () => {
     <section
       id="journey"
       ref={sectionRef}
-      className="relative min-h-screen py-32 overflow-hidden gradient-navy"
+      className="relative min-h-screen py-20 md:py-32 overflow-hidden gradient-navy"
     >
       {/* Parallax Background Layers */}
       <motion.div
@@ -240,7 +240,7 @@ const JourneySection = () => {
         </div>
 
         {/* Floating Steps (Mobile visible, Desktop distributed) */}
-        <div className="mt-24 grid grid-cols-1 md:grid-cols-5 gap-6">
+        <div className="mt-12 md:mt-24 grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-6">
           {steps.map((step, i) => (
             <motion.div
               key={i}
@@ -248,13 +248,13 @@ const JourneySection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="p-6 rounded-2xl bg-white/5 border border-white/10 text-center hover:bg-white/10 transition-colors group"
+              className="p-4 md:p-6 rounded-xl md:rounded-2xl bg-white/5 border border-white/10 text-center hover:bg-white/10 transition-colors group flex flex-col justify-center"
             >
-              <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                <step.icon className="text-accent" size={24} />
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-3 md:mb-4 group-hover:scale-110 transition-transform">
+                <step.icon className="text-accent w-5 h-5 md:w-6 md:h-6" />
               </div>
-              <h4 className="text-white font-bold mb-2">{step.title}</h4>
-              <p className="text-white/50 text-sm">{step.desc}</p>
+              <h4 className="text-white font-bold text-sm md:text-base mb-1 md:mb-2">{step.title}</h4>
+              <p className="text-white/50 text-[10px] md:text-sm leading-tight">{step.desc}</p>
             </motion.div>
           ))}
         </div>

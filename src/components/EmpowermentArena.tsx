@@ -145,8 +145,78 @@ const EmpowermentArena = () => {
                     </motion.p>
                 </div>
 
-                {/* Masonry Layout */}
-                <div className="columns-1 sm:columns-2 lg:columns-4 gap-6 space-y-6">
+                {/* Dynamic Mobile Layout - 4 Horizontal Rows */}
+                <div className="md:hidden flex flex-col gap-[14px] overflow-hidden">
+                    <style>
+                        {`
+                        @keyframes scrollRight {
+                            0% { transform: translateX(-20%); }
+                            100% { transform: translateX(0%); }
+                        }
+                        @keyframes scrollLeft {
+                            0% { transform: translateX(0%); }
+                            100% { transform: translateX(-20%); }
+                        }
+                        .row-right {
+                            animation: scrollRight 18s linear infinite;
+                        }
+                        .row-left {
+                            animation: scrollLeft 18s linear infinite;
+                        }
+                        `}
+                    </style>
+
+                    {/* Row 1 -> scroll right */}
+                    <div className="flex gap-[12px] w-max row-right">
+                        {[...images.slice(0, 3), ...images.slice(0, 3)].map((img, idx) => (
+                            <img
+                                key={`r1-${idx}`}
+                                src={img.src}
+                                alt="Arena"
+                                className="w-[140px] h-[120px] object-cover shrink-0 rounded-[16px]"
+                            />
+                        ))}
+                    </div>
+
+                    {/* Row 2 -> scroll left */}
+                    <div className="flex gap-[12px] w-max row-left">
+                        {[...images.slice(3, 6), ...images.slice(3, 6)].map((img, idx) => (
+                            <img
+                                key={`r2-${idx}`}
+                                src={img.src}
+                                alt="Arena"
+                                className="w-[140px] h-[120px] object-cover shrink-0 rounded-[16px]"
+                            />
+                        ))}
+                    </div>
+
+                    {/* Row 3 -> scroll right */}
+                    <div className="flex gap-[12px] w-max row-right">
+                        {[...images.slice(6, 9), ...images.slice(6, 9)].map((img, idx) => (
+                            <img
+                                key={`r3-${idx}`}
+                                src={img.src}
+                                alt="Arena"
+                                className="w-[140px] h-[120px] object-cover shrink-0 rounded-[16px]"
+                            />
+                        ))}
+                    </div>
+
+                    {/* Row 4 -> scroll left */}
+                    <div className="flex gap-[12px] w-max row-left">
+                        {[...images.slice(9, 12), ...images.slice(9, 12)].map((img, idx) => (
+                            <img
+                                key={`r4-${idx}`}
+                                src={img.src}
+                                alt="Arena"
+                                className="w-[140px] h-[120px] object-cover shrink-0 rounded-[16px]"
+                            />
+                        ))}
+                    </div>
+                </div>
+
+                {/* Masonry Layout - Desktop Only */}
+                <div className="hidden md:columns-2 lg:columns-4 gap-6 space-y-6">
                     {images.map((img, idx) => (
                         <motion.div
                             key={idx}
