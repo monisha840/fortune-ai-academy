@@ -29,6 +29,8 @@ const Index = () => {
       <EmpowermentArena />
       <TestimonialSection />
       <FinalCTA />
+
+
       <Footer />
     </div>
   );

@@ -1,206 +1,307 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Quote, CheckCircle, Star, Sparkles } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
+import { motion, useAnimationFrame } from "framer-motion";
+import { Sparkles, MapPin, Building2, CheckCircle } from "lucide-react";
 
-const testimonials = [
-  {
-    name: "Priya Krishnan",
-    company: "Zoho",
-    salary: "9.2",
-    text: "Fortune Innovatives completely changed my trajectory. I went from being confused about my future to landing a role at Zoho in just 5 months.",
-    role: "UI/UX Designer",
-  },
-  {
-    name: "Arjun Selvam",
-    company: "TCS",
-    salary: "7.5",
-    text: "The live projects and mock interviews gave me the confidence I needed. I cleared my TCS interview on the first attempt.",
-    role: "Full Stack Developer",
-  },
-  {
-    name: "Divya Lakshmi",
-    company: "Freshworks",
-    salary: "12.0",
-    text: "The training was incredibly comprehensive. My mentors pushed me beyond what I thought was possible.",
-    role: "Graphic Designer",
-  },
-  {
-    name: "Karthik Rajan",
-    company: "Infosys",
-    salary: "8.0",
-    text: "From a non-CS background to a tech career – Fortune Innovatives made the impossible possible for me.",
-    role: "Video Editor",
-  },
+// ─────────────────────────────────────────────────────────────────────────────
+// 🎯 CONFIGURABLE DATA — Update this array to change testimonial cards
+// ─────────────────────────────────────────────────────────────────────────────
+export const placedStudentsData = [
+    {
+        image: "/students/student7.png",
+        name: "Nithyasri V",
+        company: "Innovation LLP",
+        location: "Chennai, India",
+    },
+    {
+        image: "/students/student8.png",
+        name: "Geetha S",
+        company: "Whistle",
+        location: "Chennai, India",
+    },
+    {
+        image: "/students/student9.png",
+        name: "Gayathri G",
+        company: "My Bean Infotech",
+        location: "Coimbatore, India",
+    },
+    {
+        image: "/students/student10.png",
+        name: "Manikandan M",
+        company: "The Coding Cult",
+        location: "Hyderabad, India",
+    },
+    {
+        image: "/students/student11.png",
+        name: "Suberiya M",
+        company: "EPX Creatives",
+        location: "Kangeyam, India",
+    },
+    {
+        image: "/students/student12.png",
+        name: "Tamizharasan J",
+        company: "Cloud and Clouds",
+        location: "Singapore",
+    },
+];
+// ─────────────────────────────────────────────────────────────────────────────
+
+const DESKTOP_CARD_WIDTH = 280;
+const DESKTOP_CARD_GAP = 24;
+const MOBILE_CARD_WIDTH = 150;
+const MOBILE_CARD_GAP = 14;
+const SPEED = 0.55; // px per frame — slow premium scroll
+
+function useCardDimensions() {
+    const [isMobile, setIsMobile] = useState(
+        typeof window !== "undefined" ? window.innerWidth < 640 : false
+    );
+    useEffect(() => {
+        const handler = () => setIsMobile(window.innerWidth < 640);
+        window.addEventListener("resize", handler);
+        return () => window.removeEventListener("resize", handler);
+    }, []);
+    return isMobile
+        ? { cardWidth: MOBILE_CARD_WIDTH, cardGap: MOBILE_CARD_GAP }
+        : { cardWidth: DESKTOP_CARD_WIDTH, cardGap: DESKTOP_CARD_GAP };
+}
+
+// Triple the items for seamless infinite loop
+const items = [
+    ...placedStudentsData,
+    ...placedStudentsData,
+    ...placedStudentsData,
 ];
 
-const SalaryCounter = ({ value }: { value: string }) => {
-  const [count, setCount] = useState(0);
-  const target = parseFloat(value);
+type Student = typeof placedStudentsData[0];
 
-  useEffect(() => {
-    let start = 0;
-    const duration = 1000;
-    const increment = target / (duration / 16);
+const PlacementCard = ({
+    student,
+    centerOffset,
+    cardWidth,
+    cardGap,
+}: {
+    student: Student;
+    centerOffset: number;
+    cardWidth: number;
+    cardGap: number;
+}) => {
+    const isMobile = cardWidth < 200;
+    const cardTotal = cardWidth + cardGap;
+    const absOffset = Math.abs(centerOffset);
+    const maxDist = cardTotal * 3;
+    const normalized = Math.min(absOffset / maxDist, 1);
 
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= target) {
-        setCount(target);
-        clearInterval(timer);
-      } else {
-        setCount(parseFloat(start.toFixed(1)));
-      }
-    }, 16);
+    const scale = 1 - normalized * 0.1;
+    const opacity = 1 - normalized * 0.5;
+    const brightness = 1 - normalized * 0.25;
 
-    return () => clearInterval(timer);
-  }, [value]);
+    return (
+        <div
+            className="flex-shrink-0 relative"
+            style={{
+                width: cardWidth,
+                paddingTop: isMobile ? "2.5rem" : "4rem",
+                transform: `scale(${scale})`,
+                opacity,
+                filter: `brightness(${brightness})`,
+                transition:
+                    "transform 0.06s linear, opacity 0.06s linear, filter 0.06s linear",
+                transformOrigin: "center bottom",
+                willChange: "transform, opacity, filter",
+            }}
+        >
+            {/* Circular Student Image — overlaps top of card */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 z-20">
+                <div
+                    className={`${isMobile ? "w-16 h-16" : "w-28 h-28"} rounded-full overflow-hidden border-[3px] shadow-2xl`}
+                    style={{
+                        borderColor: "rgba(212,175,55,0.35)",
+                        boxShadow: "0 8px 30px rgba(0,0,0,0.5), 0 0 0 4px rgba(212,175,55,0.08)",
+                    }}
+                >
+                    <img
+                        src={student.image}
+                        alt={student.name}
+                        className="w-full h-full object-cover object-center"
+                        draggable={false}
+                    />
+                </div>
+                {/* Verified badge */}
+                <div className="absolute -bottom-1 -right-1 bg-emerald-500 rounded-full p-1 border-2 border-[#0b1c2d] shadow-lg">
+                    <CheckCircle size={11} className="text-white" />
+                </div>
+            </div>
 
-  return <span>₹{count.toFixed(1)} LPA</span>;
+            {/* Card Body */}
+            <div
+                className={`rounded-[20px] border border-white/[0.08] flex flex-col items-center text-center ${isMobile ? "gap-1.5 px-3 pt-10 pb-4" : "gap-3 px-6 pt-16 pb-8"}`}
+                style={{
+                    background: "rgba(255,255,255,0.04)",
+                    backdropFilter: "blur(14px)",
+                    boxShadow:
+                        "0 20px 60px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06)",
+                }}
+            >
+                {/* Student Name */}
+                <h3 className={`text-white font-bold leading-tight tracking-tight ${isMobile ? "text-[11px]" : "text-lg"}`}>
+                    {student.name}
+                </h3>
+
+                {/* Company */}
+                <div className="flex items-center gap-1">
+                    <Building2 size={isMobile ? 10 : 13} className="text-accent flex-shrink-0" />
+                    <span className={`text-accent font-semibold tracking-wide ${isMobile ? "text-[10px]" : "text-sm"}`}>
+                        {student.company}
+                    </span>
+                </div>
+
+                {/* Location */}
+                <div className="flex items-center gap-1">
+                    <MapPin size={isMobile ? 9 : 12} className="text-white/40 flex-shrink-0" />
+                    <span className={`text-white/50 font-medium ${isMobile ? "text-[9px]" : "text-xs"}`}>
+                        {student.location}
+                    </span>
+                </div>
+
+                {/* Divider + Placed Label */}
+                <div className="mt-1 pt-3 border-t border-white/[0.07] w-full">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/25">
+                        Successfully Placed
+                    </span>
+                </div>
+            </div>
+        </div>
+    );
 };
 
 const TestimonialSection = () => {
-  const [current, setCurrent] = useState(0);
-  const [direction, setDirection] = useState(0);
+    const trackRef = useRef<HTMLDivElement>(null);
+    const xRef = useRef(0);
+    const isPausedRef = useRef(false);
+    const [, forceUpdate] = useState(0);
+    const { cardWidth, cardGap } = useCardDimensions();
+    const cardTotal = cardWidth + cardGap;
 
-  const next = () => {
-    setDirection(1);
-    setCurrent((c) => (c + 1) % testimonials.length);
-  };
-  const prev = () => {
-    setDirection(-1);
-    setCurrent((c) => (c - 1 + testimonials.length) % testimonials.length);
-  };
+    const totalWidth = placedStudentsData.length * cardTotal;
 
-  const t = testimonials[current];
+    useAnimationFrame(() => {
+        if (isPausedRef.current) return;
+        xRef.current -= SPEED;
+        if (Math.abs(xRef.current) >= totalWidth) {
+            xRef.current += totalWidth;
+        }
+        if (trackRef.current) {
+            trackRef.current.style.transform = `translateX(${xRef.current}px)`;
+        }
+        forceUpdate((n) => n + 1);
+    });
 
-  return (
-    <section className="relative py-24 md:py-32 overflow-hidden gradient-navy">
-      {/* Background Motion Elements */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(212,175,55,0.1),transparent_50%)]" />
-        <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.1, 0.2, 0.1]
-          }}
-          transition={{ duration: 10, repeat: Infinity }}
-          className="absolute -top-1/4 -left-1/4 w-[1000px] h-[1000px] bg-accent/10 blur-[150px] rounded-full"
-        />
-      </div>
+    const getCardCenterOffset = (cardIndex: number) => {
+        const viewportCenter =
+            typeof window !== "undefined" ? window.innerWidth / 2 : 700;
+        const cardCenter =
+            xRef.current + cardIndex * cardTotal + cardTotal / 2;
+        return cardCenter - viewportCenter;
+    };
 
-      <div className="max-w-5xl mx-auto px-6 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-20"
-        >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 mb-6">
-            <Sparkles size={14} className="text-accent" />
-            <span className="text-accent text-xs font-bold uppercase tracking-widest">Alumni Success</span>
-          </div>
-          <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-4">
-            Transformative <span className="text-gradient-gold">Journeys</span>
-          </h2>
-        </motion.div>
-
-        <div className="relative">
-          <AnimatePresence mode="wait" custom={direction}>
-            <motion.div
-              key={current}
-              custom={direction}
-              initial={{ opacity: 0, x: direction * 100 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: direction * -100 }}
-              transition={{ duration: 0.5, ease: "anticipate" }}
-              className="glass-morphism bg-white/5 border-white/10 rounded-2xl md:rounded-[2.5rem] p-6 md:p-16 relative gold-glow-box"
-            >
-              <Quote className="absolute top-6 left-6 md:top-12 md:left-12 text-accent/10 w-12 h-12 md:w-24 md:h-24 -z-10" />
-
-              <div className="flex flex-col md:flex-row items-center gap-6 md:gap-12">
-                {/* Profile Image Area */}
-                <div className="relative shrink-0">
-                  <div className="w-20 h-20 md:w-48 md:h-48 rounded-full border-2 md:border-4 border-accent p-1 md:p-2 relative">
-                    <div className="w-full h-full rounded-full bg-navy-deep flex items-center justify-center overflow-hidden">
-                      <span className="text-3xl md:text-7xl font-display font-bold text-accent/40">{t.name[0]}</span>
-                    </div>
-                  </div>
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="absolute -bottom-1 -right-1 md:-bottom-2 md:-right-2 bg-emerald-500 text-white p-1 md:p-2 rounded-full shadow-lg border-2 border-navy"
-                  >
-                    <CheckCircle className="w-4 h-4 md:w-5 md:h-5" />
-                  </motion.div>
-                </div>
-
-                {/* Content Area */}
-                <div className="flex-1 text-center md:text-left">
-                  <div className="flex items-center justify-center md:justify-start gap-1 mb-3 md:mb-4 text-accent">
-                    {[...Array(5)].map((_, i) => <Star key={i} className="w-3 h-3 md:w-4 md:h-4" fill="currentColor" />)}
-                  </div>
-
-                  <blockquote className="text-base md:text-3xl font-medium text-white/90 leading-snug mb-6 md:mb-8">
-                    "{t.text}"
-                  </blockquote>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-8 border-t border-white/10">
-                    <div>
-                      <div className="text-white font-bold text-2xl mb-1">{t.name}</div>
-                      <div className="text-white/70 text-base">{t.role}</div>
-                    </div>
-
-                    <div className="flex flex-col items-center md:items-end justify-center">
-                      <div className="text-xs uppercase tracking-widest text-white/60 mb-1">Placed At</div>
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl font-display font-bold text-white">{t.company}</span>
-                        <div className="h-6 w-px bg-white/20" />
-                        <div className="text-accent font-display font-bold text-2xl">
-                          <SalaryCounter value={t.salary} />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Verified Badge Overlay */}
-              <div className="absolute top-8 right-8 hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-white/60 tracking-tighter uppercase">
-                <CheckCircle size={12} className="text-accent shadow-glow" />
-                Verified Placement
-              </div>
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Controls */}
-          <div className="flex items-center justify-center gap-8 mt-12">
-            <button
-              onClick={prev}
-              className="p-4 rounded-full bg-white/5 border border-white/10 text-white hover:bg-accent hover:text-navy hover:border-accent transition-all duration-300"
-            >
-              <ChevronLeft size={24} />
-            </button>
-            <div className="flex gap-3">
-              {testimonials.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrent(i)}
-                  className={`h-2 rounded-full transition-all duration-500 ${i === current ? "bg-accent w-12" : "bg-white/20 w-3 hover:bg-white/40"
-                    }`}
+    return (
+        <section className="relative py-24 md:py-32 overflow-hidden bg-navy-deep">
+            {/* Ambient glow */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                <div
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[500px] rounded-full blur-[120px] opacity-25"
+                    style={{
+                        background:
+                            "radial-gradient(ellipse, rgba(212,175,55,0.2) 0%, transparent 70%)",
+                    }}
                 />
-              ))}
             </div>
-            <button
-              onClick={next}
-              className="p-4 rounded-full bg-white/5 border border-white/10 text-white hover:bg-accent hover:text-navy hover:border-accent transition-all duration-300"
+
+            {/* Section Header */}
+            <div className="max-w-7xl mx-auto px-6 relative z-10 mb-20 text-center">
+                <motion.div
+                    initial={{ opacity: 0, y: 15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 mb-6"
+                >
+                    <Sparkles size={13} className="text-accent" />
+                    <span className="text-accent text-[11px] font-bold uppercase tracking-[0.2em]">
+                        Placement Success
+                    </span>
+                </motion.div>
+
+                <motion.h2
+                    initial={{ opacity: 0, y: 15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.1 }}
+                    className="font-display text-4xl md:text-6xl font-bold text-white leading-tight tracking-tight"
+                >
+                    Career <span className="text-gradient-gold">Transformations</span>
+                </motion.h2>
+
+                <motion.p
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.2 }}
+                    className="text-white/40 text-sm mt-4 max-w-md mx-auto"
+                >
+                    Real students. Real placements. An endless stream of success.
+                </motion.p>
+            </div>
+
+            {/* Infinite Scroll Carousel */}
+            <div
+                className="relative w-full overflow-hidden"
+                style={{ paddingTop: "4.5rem", paddingBottom: "2.5rem" }}
+                onMouseEnter={() => {
+                    isPausedRef.current = true;
+                }}
+                onMouseLeave={() => {
+                    isPausedRef.current = false;
+                }}
             >
-              <ChevronRight size={24} />
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
+                {/* Left gradient fade */}
+                <div
+                    className="absolute left-0 top-0 h-full w-[160px] z-10 pointer-events-none"
+                    style={{
+                        background:
+                            "linear-gradient(to right, #0b1c2d 0%, transparent 100%)",
+                    }}
+                />
+                {/* Right gradient fade */}
+                <div
+                    className="absolute right-0 top-0 h-full w-[160px] z-10 pointer-events-none"
+                    style={{
+                        background:
+                            "linear-gradient(to left, #0b1c2d 0%, transparent 100%)",
+                    }}
+                />
+
+                <div
+                    ref={trackRef}
+                    className="flex"
+                    style={{
+                        gap: cardGap,
+                        willChange: "transform",
+                        backfaceVisibility: "hidden",
+                    }}
+                >
+                    {items.map((student, index) => (
+                        <PlacementCard
+                            key={`${student.name}-${index}`}
+                            student={student}
+                            centerOffset={getCardCenterOffset(index)}
+                            cardWidth={cardWidth}
+                            cardGap={cardGap}
+                        />
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
 };
 
 export default TestimonialSection;

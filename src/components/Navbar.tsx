@@ -126,18 +126,18 @@ const Navbar = () => {
             exit={{ opacity: 0, x: "100%" }}
             className="fixed inset-0 top-0 left-0 w-full h-screen bg-[#0B1C2D] z-[100] md:hidden"
           >
-            <div className="flex flex-col h-full px-8 py-20 overflow-y-auto">
+            <div className="flex flex-col h-full px-6 py-14 overflow-y-auto">
               <button className="absolute top-6 right-6 text-white" onClick={() => setOpen(false)}>
                 <X size={32} />
               </button>
 
-              <div className="space-y-8">
+              <div className="space-y-4">
                 {navLinks.map((l) => (
-                  <div key={l.label} className="space-y-4">
+                  <div key={l.label} className="space-y-2">
                     <a
                       href={l.href}
                       onClick={() => !l.hasDropdown && setOpen(false)}
-                      className="text-4xl font-bold text-white hover:text-[#D4AF37] transition-colors flex items-center justify-between"
+                      className="text-xl font-bold text-white hover:text-[#D4AF37] transition-colors flex items-center justify-between"
                     >
                       {l.label}
                     </a>
@@ -149,7 +149,7 @@ const Navbar = () => {
                             key={course.title}
                             href="#courses"
                             onClick={() => handleCourseClick(course.title)}
-                            className="text-lg text-white/60 hover:text-[#D4AF37]"
+                            className="text-sm text-white/60 hover:text-[#D4AF37]"
                           >
                             {course.title}
                           </a>
@@ -162,7 +162,7 @@ const Navbar = () => {
                 <a
                   href="#faq"
                   onClick={() => setOpen(false)}
-                  className="block w-full bg-[#D4AF37] text-[#0B1C2D] py-5 rounded-2xl text-xl font-bold text-center mt-12"
+                  className="block w-full bg-[#D4AF37] text-[#0B1C2D] py-3 rounded-2xl text-base font-bold text-center mt-8"
                 >
                   Book Free Demo
                 </a>
