@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { courses, categories } from "@/lib/constants";
 
@@ -179,12 +180,12 @@ const CourseSection = () => {
 
                 {/* Mobile Sticky CTA */}
                 <div className="p-4 bg-background border-t border-border mt-auto">
-                  <a
-                    href="/apply"
+                  <Link
+                    to="/apply"
                     className="flex items-center justify-center gap-2 w-full py-4 bg-accent text-accent-foreground rounded-2xl font-bold text-sm gold-glow-box shadow-xl active:scale-[0.98] transition-all"
                   >
                     Enroll Now <ArrowRight size={16} />
-                  </a>
+                  </Link>
                 </div>
               </motion.div>
             )}
@@ -288,12 +289,12 @@ const CourseSection = () => {
                   </div>
                 </div>
 
-                <a
-                  href="/apply"
+                <Link
+                  to="/apply"
                   className="inline-flex items-center gap-2 bg-accent text-accent-foreground px-6 py-3 rounded-lg font-semibold hover-scale gold-glow-box transition-all duration-300"
                 >
                   Enroll Now <ArrowRight size={16} />
-                </a>
+                </Link>
               </motion.div>
             </AnimatePresence>
           </div>

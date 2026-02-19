@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { courses } from "@/lib/constants";
 import logo from "@/assets/logo.png";
@@ -103,12 +104,12 @@ const Navbar = () => {
               )}
             </div>
           ))}
-          <a
-            href="/apply"
+          <Link
+            to="/apply"
             className="bg-[#D4AF37] text-[#0B1C2D] px-6 py-2.5 rounded-full text-sm font-bold hover:scale-105 transition-all duration-300 shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:shadow-[0_0_30px_rgba(212,175,55,0.5)]"
           >
             Get Started
-          </a>
+          </Link>
         </div>
 
         {/* Mobile toggle */}

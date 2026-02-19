@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { ArrowRight, ChevronDown } from "lucide-react";
 
 const stats = [
@@ -130,12 +131,12 @@ const HeroSection = () => {
           transition={{ duration: 0.6, delay: 0.45 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12"
         >
-          <a
-            href="/apply"
+          <Link
+            to="/apply"
             className="bg-accent text-accent-foreground px-8 py-3.5 rounded-lg font-semibold text-lg hover-scale gold-glow-box flex items-center gap-2 transition-all duration-300"
           >
             Book Free Demo <ArrowRight size={18} />
-          </a>
+          </Link>
           <a
             href="#courses"
             className="border border-primary-foreground/30 text-primary-foreground px-8 py-3.5 rounded-lg font-semibold text-lg hover:border-accent hover:text-accent transition-all duration-300"
