@@ -54,11 +54,16 @@ const Apply = () => {
                 .from("leads")
                 .insert([
                     {
-                        name: form.name,
+                        firstName: form.name.split(' ')[0],
+                        lastName: form.name.split(' ').slice(1).join(' ') || '', // Use empty string if no last name
                         phone: form.phone,
                         email: form.email,
-                        course: form.course,
-                        branch: form.branch,
+                        interestedCourse: form.course,
+                        location: form.branch,
+                        notes: `Preferred Branch: ${form.branch}`, // Backup in case location is unused
+                        source: "Website Enquiry",
+                        status: "NEW",
+                        createdAt: new Date().toISOString(),
                     },
                 ]);
 
