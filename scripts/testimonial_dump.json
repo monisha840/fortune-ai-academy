@@ -1,0 +1,65 @@
+[
+  {
+    "id": "b4267fc1-6cfa-45a6-8464-de70d021728a",
+    "name": "Nithyasri V",
+    "company": "Innovation LLP",
+    "location": "Chennai, India",
+    "image_url": "/students/student7.png",
+    "display_order": 1,
+    "created_at": "2026-02-21T10:16:24.605196+00:00"
+  },
+  {
+    "id": "9d907040-11e6-48b9-9fbf-a576b25ad712",
+    "name": "Manikandan M",
+    "company": "The Coding Cult",
+    "location": "Hyderabad, India",
+    "image_url": "/students/student10.png",
+    "display_order": 4,
+    "created_at": "2026-02-21T10:16:24.605196+00:00"
+  },
+  {
+    "id": "cddb813a-d3d2-46de-bec0-19e0d6b50bb9",
+    "name": "Suberiya M",
+    "company": "EPX Creatives",
+    "location": "Kangeyam, India",
+    "image_url": "/students/student11.png",
+    "display_order": 5,
+    "created_at": "2026-02-21T10:16:24.605196+00:00"
+  },
+  {
+    "id": "0c35b523-33fd-4ea9-afcb-2f537e4f0f5f",
+    "name": "Tamizharasan J",
+    "company": "Cloud and Clouds",
+    "location": "Singapore",
+    "image_url": "/students/student12.png",
+    "display_order": 6,
+    "created_at": "2026-02-21T10:16:24.605196+00:00"
+  },
+  {
+    "id": "2feabc6d-4911-4b68-b9fc-5476deb6e67a",
+    "name": "Gayathri G",
+    "company": "My Bean Infotech",
+    "location": "Coimbatore, India",
+    "image_url": "/students/student9.png",
+    "display_order": 3,
+    "created_at": "2026-02-21T10:17:08.870031+00:00"
+  },
+  {
+    "id": "68fe12a3-7e49-494d-b698-ff3af1296a93",
+    "name": "Geetha S",
+    "company": "Whistle",
+    "location": "Chennai, India",
+    "image_url": "/students/student8.png",
+    "display_order": 2,
+    "created_at": "2026-02-24T04:38:18.873908+00:00"
+  },
+  {
+    "id": "c6b2ec8b-bcc2-4250-abb2-fcf3f0401fb9",
+    "name": "Monisha",
+    "company": "sirah digital",
+    "location": "chennai",
+    "image_url": "/students/monisha.jpeg",
+    "display_order": 3,
+    "created_at": "2026-02-24T08:53:34.535522+00:00"
+  }
+]

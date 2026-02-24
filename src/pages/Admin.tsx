@@ -12,14 +12,15 @@ import {
     X,
     ExternalLink,
     ChevronRight,
-    HelpCircle
+    HelpCircle,
+    UserCheck
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 import AdminCourses from "@/components/admin/AdminCourses";
 import AdminTestimonials from "@/components/admin/AdminTestimonials";
 import AdminHiringPartners from "@/components/admin/AdminHiringPartners";
-import AdminFAQs from "@/components/admin/AdminFAQs";
+import AdminLeads from "@/components/admin/AdminLeads";
 
 // Placeholder components for sections
 const AdminOverview = () => {
@@ -99,7 +100,7 @@ const Admin = () => {
         { label: "Courses", icon: BookOpen, path: "/admin/courses" },
         { label: "Testimonials", icon: Users, path: "/admin/testimonials" },
         { label: "Hiring Partners", icon: Briefcase, path: "/admin/partners" },
-        { label: "FAQs", icon: HelpCircle, path: "/admin/faqs" },
+        { label: "Leads", icon: UserCheck, path: "/admin/leads" },
     ];
 
     return (
@@ -159,7 +160,7 @@ const Admin = () => {
                             <Route path="courses" element={<AdminCourses />} />
                             <Route path="testimonials" element={<AdminTestimonials />} />
                             <Route path="partners" element={<AdminHiringPartners />} />
-                            <Route path="faqs" element={<AdminFAQs />} />
+                            <Route path="leads" element={<AdminLeads />} />
                         </Routes>
                     </div>
                 </ScrollArea>

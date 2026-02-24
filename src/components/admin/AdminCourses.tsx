@@ -21,11 +21,11 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Edit2, Trash2, Save, Loader2, BookOpen, Star } from "lucide-react";
+import DeleteConfirmDialog from "./DeleteConfirmDialog";
 
 interface Course {
     id: string;
     title: string;
-    shortTitle: string;
     category: string;
     overview: string;
     tools: string[];
@@ -42,11 +42,12 @@ const AdminCourses = () => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingCourse, setEditingCourse] = useState<Course | null>(null);
     const [isSaving, setIsSaving] = useState(false);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState<string | null>(null);
     const { toast } = useToast();
 
     const [formData, setFormData] = useState<Partial<Course>>({
         title: "",
-        shortTitle: "",
         category: "",
         overview: "",
         tools: [],
@@ -87,7 +88,6 @@ const AdminCourses = () => {
             setEditingCourse(null);
             setFormData({
                 title: "",
-                shortTitle: "",
                 category: "",
                 overview: "",
                 tools: [],
@@ -138,11 +138,16 @@ const AdminCourses = () => {
         setIsSaving(false);
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm("Are you sure you want to delete this course?")) return;
+    const handleDeleteClick = (id: string) => {
+        setItemToDelete(id);
+        setIsDeleteDialogOpen(true);
+    };
 
-        setLoading(true);
-        const { error } = await supabase.from("courses").delete().eq("id", id);
+    const handleDeleteConfirm = async () => {
+        if (!itemToDelete) return;
+
+        setIsSaving(true);
+        const { error } = await supabase.from("courses").delete().eq("id", itemToDelete);
 
         if (error) {
             toast({ variant: "destructive", title: "Error deleting course", description: error.message });
@@ -150,7 +155,9 @@ const AdminCourses = () => {
             toast({ title: "Course deleted" });
             fetchCourses();
         }
-        setLoading(false);
+        setIsSaving(false);
+        setIsDeleteDialogOpen(false);
+        setItemToDelete(null);
     };
 
     return (
@@ -207,7 +214,7 @@ const AdminCourses = () => {
                                                 <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(course)} className="hover:bg-white/10 text-white/60 hover:text-white">
                                                     <Edit2 size={16} />
                                                 </Button>
-                                                <Button variant="ghost" size="icon" onClick={() => handleDelete(course.id)} className="hover:bg-destructive/10 text-white/40 hover:text-destructive">
+                                                <Button variant="ghost" size="icon" onClick={() => handleDeleteClick(course.id)} className="hover:bg-destructive/10 text-white/40 hover:text-destructive">
                                                     <Trash2 size={16} />
                                                 </Button>
                                             </div>
@@ -228,27 +235,15 @@ const AdminCourses = () => {
                         </DialogTitle>
                     </DialogHeader>
                     <form onSubmit={handleSubmit} className="space-y-6 py-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <label className="text-sm font-semibold text-white/60">Full Title</label>
-                                <Input
-                                    value={formData.title}
-                                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                    placeholder="e.g. UI/UX Design"
-                                    className="bg-white/5 border-white/10 text-white"
-                                    required
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-semibold text-white/60">Short Title (for UI)</label>
-                                <Input
-                                    value={formData.shortTitle}
-                                    onChange={(e) => setFormData({ ...formData, shortTitle: e.target.value })}
-                                    placeholder="e.g. UI/UX"
-                                    className="bg-white/5 border-white/10 text-white"
-                                    required
-                                />
-                            </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-semibold text-white/60">Full Title</label>
+                            <Input
+                                value={formData.title}
+                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                placeholder="e.g. UI/UX Design"
+                                className="bg-white/5 border-white/10 text-white"
+                                required
+                            />
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
@@ -355,7 +350,16 @@ const AdminCourses = () => {
                     </form>
                 </DialogContent>
             </Dialog>
-        </div>
+
+            <DeleteConfirmDialog
+                open={isDeleteDialogOpen}
+                onOpenChange={setIsDeleteDialogOpen}
+                onConfirm={handleDeleteConfirm}
+                loading={isSaving}
+                title="Delete Course?"
+                description="Are you sure you want to delete this course? This action cannot be undone."
+            />
+        </div >
     );
 };
 

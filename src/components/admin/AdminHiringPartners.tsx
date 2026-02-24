@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Edit2, Trash2, Save, Loader2, Building2, Globe, Image as ImageIcon } from "lucide-react";
+import DeleteConfirmDialog from "./DeleteConfirmDialog";
 
 interface HiringPartner {
     id: string;
@@ -34,6 +35,8 @@ const AdminHiringPartners = () => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingPartner, setEditingPartner] = useState<HiringPartner | null>(null);
     const [isSaving, setIsSaving] = useState(false);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState<string | null>(null);
     const { toast } = useToast();
 
     const [formData, setFormData] = useState<Partial<HiringPartner>>({
@@ -108,11 +111,16 @@ const AdminHiringPartners = () => {
         setIsSaving(false);
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm("Are you sure you want to remove this hiring partner?")) return;
+    const handleDeleteClick = (id: string) => {
+        setItemToDelete(id);
+        setIsDeleteDialogOpen(true);
+    };
 
-        setLoading(true);
-        const { error } = await supabase.from("hiring_partners").delete().eq("id", id);
+    const handleDeleteConfirm = async () => {
+        if (!itemToDelete) return;
+
+        setIsSaving(true);
+        const { error } = await supabase.from("hiring_partners").delete().eq("id", itemToDelete);
 
         if (error) {
             toast({ variant: "destructive", title: "Error deleting partner", description: error.message });
@@ -120,8 +128,11 @@ const AdminHiringPartners = () => {
             toast({ title: "Partner removed" });
             fetchPartners();
         }
-        setLoading(false);
+        setIsSaving(false);
+        setIsDeleteDialogOpen(false);
+        setItemToDelete(null);
     };
+
 
     return (
         <div className="space-y-6">
@@ -187,7 +198,7 @@ const AdminHiringPartners = () => {
                                                 <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(partner)} className="hover:bg-white/10 text-white/60 hover:text-white">
                                                     <Edit2 size={16} />
                                                 </Button>
-                                                <Button variant="ghost" size="icon" onClick={() => handleDelete(partner.id)} className="hover:bg-destructive/10 text-white/40 hover:text-destructive">
+                                                <Button variant="ghost" size="icon" onClick={() => handleDeleteClick(partner.id)} className="hover:bg-destructive/10 text-white/40 hover:text-destructive">
                                                     <Trash2 size={16} />
                                                 </Button>
                                             </div>
@@ -270,6 +281,15 @@ const AdminHiringPartners = () => {
                     </form>
                 </DialogContent>
             </Dialog>
+
+            <DeleteConfirmDialog
+                open={isDeleteDialogOpen}
+                onOpenChange={setIsDeleteDialogOpen}
+                onConfirm={handleDeleteConfirm}
+                loading={isSaving}
+                title="Remove Hiring Partner?"
+                description="Are you sure you want to remove this partner from your list? This will update the website immediately."
+            />
         </div>
     );
 };

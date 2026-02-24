@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Send, CheckCircle2, ChevronDown, Sparkles, AlertCircle } from "lucide-react";
 import { supabase, crmSupabase } from "@/lib/supabase";
 import { Link } from "react-router-dom";
 
-const courses = [
+const initialCourses = [
     "UI/UX Design",
     "Full Stack Development",
     "Graphic Designing",
@@ -18,6 +18,7 @@ const courses = [
 const branches = ["Erode", "Coimbatore", "Salem", "Tiruppur"];
 
 const Apply = () => {
+    const [courses, setCourses] = useState<string[]>(initialCourses);
     const [submitted, setSubmitted] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -31,6 +32,22 @@ const Apply = () => {
     });
 
     const [focused, setFocused] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchCourses = async () => {
+            const { data, error } = await supabase
+                .from('courses')
+                .select('title')
+                .order('display_order', { ascending: true });
+
+            if (data && !error) {
+                const courseTitles = data.map(c => c.title);
+                setCourses(courseTitles.length > 0 ? courseTitles : initialCourses);
+            }
+        };
+
+        fetchCourses();
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -65,20 +82,28 @@ const Apply = () => {
                 ]);
 
             // 2. Submit to CRM Supabase (camelCase)
+            const branchIdMap: Record<string, string> = {
+                "Erode": "ae1ebf77-14a0-4a76-a123-11b44b4517d3",
+                "Coimbatore": "f0feca6f-a037-43e2-9407-8175a234fc46",
+                "Salem": "1e736840-e93c-4259-8fd7-c24c28b14413",
+                "Tiruppur": "738587cc-6f2c-4f03-a386-4c3a376f4cc0"
+            };
+
             const crmPromise = crmSupabase
                 .from("leads")
                 .insert([
                     {
+                        id: crypto.randomUUID(),
                         firstName: form.name.split(' ')[0],
                         lastName: form.name.split(' ').slice(1).join(' ') || '',
                         phone: form.phone,
                         email: form.email,
                         interestedCourse: form.course,
-                        location: form.branch,
-                        notes: `Preferred Branch: ${form.branch}`,
+                        branchId: branchIdMap[form.branch] || null,
                         source: "Website Enquiry",
                         status: "NEW",
                         createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
                     },
                 ]);
 
@@ -87,7 +112,13 @@ const Apply = () => {
 
             if (localResult.error) throw localResult.error;
             if (crmResult.error) {
-                console.error("CRM Sync Error:", crmResult.error);
+                const fullError = {
+                    message: crmResult.error.message,
+                    details: crmResult.error.details,
+                    hint: crmResult.error.hint,
+                    code: crmResult.error.code
+                };
+                console.error("CRM Sync Error Full Details (Stringified):", JSON.stringify(fullError, null, 2));
                 // We proceed if local was successful, but log the CRM error
             }
 

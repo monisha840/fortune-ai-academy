@@ -109,7 +109,7 @@ const CourseSection = () => {
                 <div className="space-y-4">
                   {filtered.map((course, i) => (
                     <button
-                      key={course.title}
+                      key={`${course.title}-${i}`}
                       onClick={() => handleCourseClick(i)}
                       className="w-full text-left p-5 rounded-2xl bg-primary border border-white/10 active:scale-[0.98] transition-all duration-200 group relative"
                     >
@@ -176,8 +176,8 @@ const CourseSection = () => {
                   <div className="space-y-3">
                     <h4 className="text-[10px] uppercase tracking-widest text-foreground font-bold opacity-50">Technologies</h4>
                     <div className="flex flex-wrap gap-1.5">
-                      {activeCourse.tools.map((t) => (
-                        <span key={t} className="px-2.5 py-1 bg-primary text-primary-foreground text-[10px] rounded-lg font-medium">
+                      {activeCourse.tools.map((t, i) => (
+                        <span key={`${t}-${i}`} className="px-2.5 py-1 bg-primary text-primary-foreground text-[10px] rounded-lg font-medium">
                           {t}
                         </span>
                       ))}
@@ -221,7 +221,7 @@ const CourseSection = () => {
           <div className="bg-primary p-2 md:p-4 space-y-1 overflow-y-auto max-h-[520px]">
             {filtered.map((course, i) => (
               <button
-                key={course.title}
+                key={`${course.title}-${i}`}
                 onClick={() => setActiveIndex(i)}
                 className={`w-full text-left px-5 py-4 rounded-xl transition-all duration-300 group relative ${activeIndex === i
                   ? "bg-secondary border border-accent/30"
@@ -254,7 +254,7 @@ const CourseSection = () => {
           <div className="relative bg-background p-8 md:p-12 flex flex-col justify-center overflow-hidden">
             {/* Large faded background text */}
             <div className="absolute top-1/2 right-4 -translate-y-1/2 font-display text-[120px] md:text-[180px] font-bold text-foreground/[0.08] leading-none select-none pointer-events-none whitespace-nowrap">
-              {activeCourse?.shortTitle}
+              {activeCourse?.title?.split(' ')[0]}
             </div>
 
             <AnimatePresence mode="wait">

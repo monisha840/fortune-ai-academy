@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Edit2, Trash2, Save, Loader2, MapPin, Building2, User } from "lucide-react";
+import DeleteConfirmDialog from "./DeleteConfirmDialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface Testimonial {
@@ -35,6 +36,9 @@ const AdminTestimonials = () => {
     const [loading, setLoading] = useState(true);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingTestimonial, setEditingTestimonial] = useState<Testimonial | null>(null);
+    const [isSaving, setIsSaving] = useState(false);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState<string | null>(null);
     const { toast } = useToast();
 
     const [formData, setFormData] = useState<Partial<Testimonial>>({
@@ -111,11 +115,16 @@ const AdminTestimonials = () => {
         setLoading(false);
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm("Are you sure you want to delete this testimonial?")) return;
+    const handleDeleteClick = (id: string) => {
+        setItemToDelete(id);
+        setIsDeleteDialogOpen(true);
+    };
 
-        setLoading(true);
-        const { error } = await supabase.from("testimonials").delete().eq("id", id);
+    const handleDeleteConfirm = async () => {
+        if (!itemToDelete) return;
+
+        setIsSaving(true);
+        const { error } = await supabase.from("testimonials").delete().eq("id", itemToDelete);
 
         if (error) {
             toast({ variant: "destructive", title: "Error deleting testimonial", description: error.message });
@@ -123,8 +132,11 @@ const AdminTestimonials = () => {
             toast({ title: "Testimonial deleted" });
             fetchTestimonials();
         }
-        setLoading(false);
+        setIsSaving(false);
+        setIsDeleteDialogOpen(false);
+        setItemToDelete(null);
     };
+
 
     return (
         <div className="space-y-6">
@@ -186,7 +198,7 @@ const AdminTestimonials = () => {
                                             <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(student)} className="hover:bg-white/10 text-white/60 hover:text-white">
                                                 <Edit2 size={16} />
                                             </Button>
-                                            <Button variant="ghost" size="icon" onClick={() => handleDelete(student.id)} className="hover:bg-destructive/10 text-white/40 hover:text-destructive">
+                                            <Button variant="ghost" size="icon" onClick={() => handleDeleteClick(student.id)} className="hover:bg-destructive/10 text-white/40 hover:text-destructive">
                                                 <Trash2 size={16} />
                                             </Button>
                                         </div>
@@ -274,6 +286,15 @@ const AdminTestimonials = () => {
                     </form>
                 </DialogContent>
             </Dialog>
+
+            <DeleteConfirmDialog
+                open={isDeleteDialogOpen}
+                onOpenChange={setIsDeleteDialogOpen}
+                onConfirm={handleDeleteConfirm}
+                loading={isSaving}
+                title="Delete Student Record?"
+                description="Are you sure you want to delete this testimonial? This action cannot be revoked."
+            />
         </div>
     );
 };
