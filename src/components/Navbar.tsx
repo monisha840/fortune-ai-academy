@@ -160,13 +160,13 @@ const Navbar = () => {
                   </div>
                 ))}
 
-                <a
-                  href="#faq"
+                <Link
+                  to="/apply"
                   onClick={() => setOpen(false)}
                   className="block w-full bg-[#D4AF37] text-[#0B1C2D] py-3 rounded-2xl text-base font-bold text-center mt-8"
                 >
                   Book Free Demo
-                </a>
+                </Link>
               </div>
             </div>
           </motion.div>

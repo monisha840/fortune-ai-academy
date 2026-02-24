@@ -2,16 +2,35 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { courses, categories } from "@/lib/constants";
+import { courses as initialCourses, categories } from "@/lib/constants";
+import { supabase } from "@/lib/supabase";
 
 const CourseSection = () => {
+  const [courses, setCourses] = useState<any[]>(initialCourses);
+  const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [showMobileDetail, setShowMobileDetail] = useState(false);
 
   useEffect(() => {
+    const fetchCourses = async () => {
+      const { data, error } = await supabase
+        .from('courses')
+        .select('*')
+        .order('display_order', { ascending: true });
+
+      if (data && !error) {
+        setCourses(data);
+      } else {
+        setCourses(initialCourses); // Fallback to initial data if error
+      }
+      setLoading(false);
+    };
+
+    fetchCourses();
+
     const handleCourseSelect = (e: CustomEvent<{ title: string }>) => {
-      const index = courses.findIndex(c => c.title === e.detail.title);
+      const index = (courses.length > 0 ? courses : initialCourses).findIndex(c => c.title === e.detail.title);
       if (index !== -1) {
         setActiveCategory("All"); // Reset category to show all so index is correct
         setTimeout(() => {
@@ -135,14 +154,18 @@ const CourseSection = () => {
                     Back to List
                   </button>
 
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-[10px] uppercase tracking-widest text-accent font-bold">{activeCourse.category}</span>
-                    <span className="w-6 h-px bg-accent/30" />
-                  </div>
-                  <h3 className="font-display text-2xl font-bold text-foreground mb-4 leading-tight">
-                    {activeCourse.title}
-                  </h3>
-                  <div className="h-1 w-12 bg-accent rounded-full mb-6" />
+                  {activeCourse && (
+                    <>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-[10px] uppercase tracking-widest text-accent font-bold">{activeCourse.category}</span>
+                        <span className="w-6 h-px bg-accent/30" />
+                      </div>
+                      <h3 className="font-display text-2xl font-bold text-foreground mb-4 leading-tight">
+                        {activeCourse.title}
+                      </h3>
+                      <div className="h-1 w-12 bg-accent rounded-full mb-6" />
+                    </>
+                  )}
                 </div>
 
                 <div className="p-6 pt-0 flex-1 space-y-6">
@@ -231,71 +254,73 @@ const CourseSection = () => {
           <div className="relative bg-background p-8 md:p-12 flex flex-col justify-center overflow-hidden">
             {/* Large faded background text */}
             <div className="absolute top-1/2 right-4 -translate-y-1/2 font-display text-[120px] md:text-[180px] font-bold text-foreground/[0.08] leading-none select-none pointer-events-none whitespace-nowrap">
-              {activeCourse.shortTitle}
+              {activeCourse?.shortTitle}
             </div>
 
             <AnimatePresence mode="wait">
-              <motion.div
-                key={activeCourse.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.3 }}
-                className="relative z-10"
-              >
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="text-xs uppercase tracking-widest text-accent font-semibold">{activeCourse.category}</span>
-                  <span className="w-8 h-px bg-accent" />
-                </div>
-
-                <h3 className="font-display text-2xl md:text-4xl font-bold text-foreground mb-4">
-                  {activeCourse.title}
-                </h3>
-
+              {activeCourse && (
                 <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: "4rem" }}
-                  transition={{ duration: 0.4, delay: 0.15 }}
-                  className="h-1 bg-accent rounded-full mb-6"
-                />
-
-                <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-6 max-w-lg">
-                  {activeCourse.overview}
-                </p>
-
-                <div className="flex flex-wrap gap-2 mb-8">
-                  {activeCourse.tools.map((t) => (
-                    <span
-                      key={t}
-                      className="px-3 py-1.5 bg-primary text-primary-foreground text-xs rounded-full font-medium"
-                    >
-                      {t}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="grid grid-cols-3 gap-4 mb-8">
-                  <div>
-                    <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Duration</div>
-                    <div className="font-display font-bold text-foreground">{activeCourse.duration}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Salary Range</div>
-                    <div className="font-display font-bold text-accent">{activeCourse.salary}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Top Role</div>
-                    <div className="font-display font-bold text-foreground text-sm">{activeCourse.roles.split(", ")[0]}</div>
-                  </div>
-                </div>
-
-                <Link
-                  to="/apply"
-                  className="inline-flex items-center gap-2 bg-accent text-accent-foreground px-6 py-3 rounded-lg font-semibold hover-scale gold-glow-box transition-all duration-300"
+                  key={activeCourse.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  transition={{ duration: 0.3 }}
+                  className="relative z-10"
                 >
-                  Enroll Now <ArrowRight size={16} />
-                </Link>
-              </motion.div>
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="text-xs uppercase tracking-widest text-accent font-semibold">{activeCourse.category}</span>
+                    <span className="w-8 h-px bg-accent" />
+                  </div>
+
+                  <h3 className="font-display text-2xl md:text-4xl font-bold text-foreground mb-4">
+                    {activeCourse.title}
+                  </h3>
+
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: "4rem" }}
+                    transition={{ duration: 0.4, delay: 0.15 }}
+                    className="h-1 bg-accent rounded-full mb-6"
+                  />
+
+                  <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-6 max-w-lg">
+                    {activeCourse.overview}
+                  </p>
+
+                  <div className="flex flex-wrap gap-2 mb-8">
+                    {activeCourse.tools.map((tool: string) => (
+                      <span
+                        key={tool}
+                        className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] text-white/60 font-medium"
+                      >
+                        {tool}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-4 mb-8">
+                    <div>
+                      <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Duration</div>
+                      <div className="font-display font-bold text-foreground">{activeCourse.duration}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Salary Range</div>
+                      <div className="font-display font-bold text-accent">{activeCourse.salary}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Top Role</div>
+                      <div className="font-display font-bold text-foreground text-sm">{activeCourse.roles.split(", ")[0]}</div>
+                    </div>
+                  </div>
+
+                  <Link
+                    to="/apply"
+                    className="inline-flex items-center gap-2 bg-accent text-accent-foreground px-6 py-3 rounded-lg font-semibold hover-scale gold-glow-box transition-all duration-300"
+                  >
+                    Enroll Now <ArrowRight size={16} />
+                  </Link>
+                </motion.div>
+              )}
             </AnimatePresence>
           </div>
         </div>

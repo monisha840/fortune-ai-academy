@@ -1,260 +1,229 @@
-import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
-function ParticleBackground() {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
-
-        let particles: Particle[] = [];
-        let animationFrameId: number;
-
-        const resize = () => {
-            canvas.width = window.innerWidth;
-            canvas.height = canvas.parentElement?.offsetHeight || window.innerHeight;
-            initParticles();
-        };
-
-        class Particle {
-            x: number;
-            y: number;
-            vx: number;
-            vy: number;
-            size: number;
-
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.vx = (Math.random() - 0.5) * 0.4;
-                this.vy = (Math.random() - 0.5) * 0.4;
-                this.size = Math.random() * 1.5 + 0.5;
-            }
-
-            update() {
-                this.x += this.vx;
-                this.y += this.vy;
-                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-            }
-
-            draw() {
-                if (!ctx) return;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
-                ctx.fill();
-            }
-        }
-
-        const initParticles = () => {
-            particles = [];
-            const count = Math.floor((canvas.width * canvas.height) / 20000);
-            for (let i = 0; i < count; i++) particles.push(new Particle());
-        };
-
-        const animate = () => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach((p, i) => {
-                p.update();
-                p.draw();
-                for (let j = i + 1; j < particles.length; j++) {
-                    const dx = p.x - particles[j].x;
-                    const dy = p.y - particles[j].y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 100) {
-                        ctx.beginPath();
-                        ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 * (1 - dist / 100)})`;
-                        ctx.lineWidth = 0.5;
-                        ctx.moveTo(p.x, p.y);
-                        ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.stroke();
-                    }
-                }
-            });
-            animationFrameId = requestAnimationFrame(animate);
-        };
-
-        window.addEventListener("resize", resize);
-        resize();
-        animate();
-
-        return () => {
-            window.removeEventListener("resize", resize);
-            cancelAnimationFrame(animationFrameId);
-        };
-    }, []);
-
-    return <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" />;
+interface ImageItem {
+    src: string;
+    alt: string;
 }
 
-const images = [
-    { src: "/arena/arena1.png", height: "aspect-[4/3]" },
-    { src: "/arena/arena2.png", height: "aspect-[1/1]" },
-    { src: "/arena/arena3.png", height: "aspect-[3/4]" },
-    { src: "/arena/arena4.png", height: "aspect-[3/2]" },
-    { src: "/arena/arena5.png", height: "aspect-[4/5]" },
-    { src: "/arena/arena6.png", height: "aspect-[1/1]" },
-    { src: "/arena/arena7.png", height: "aspect-[3/4]" },
-    { src: "/arena/arena8.png", height: "aspect-[4/3]" },
-    { src: "/arena/arena9.png", height: "aspect-[1/1]" },
-    { src: "/arena/arena10.png", height: "aspect-[3/2]" },
-    { src: "/arena/arena11.png", height: "aspect-[4/5]" },
-    { src: "/arena/arena12.png", height: "aspect-[3/4]" },
+const IMAGES: ImageItem[] = [
+    { src: "/arena/arena1.png", alt: "Growth and Development Session" },
+    { src: "/arena/arena2.png", alt: "Team Collaboration Meeting" },
+    { src: "/arena/arena3.png", alt: "Leadership Workshop" },
+    { src: "/arena/arena4.png", alt: "Skills Training Session" },
+    { src: "/arena/arena5.png", alt: "Interactive Learning" },
+    { src: "/arena/arena6.png", alt: "Student Success Moment" },
+    { src: "/arena/arena7.png", alt: "Professional Development" },
+    { src: "/arena/arena8.png", alt: "Practical Training" },
+    { src: "/arena/arena9.png", alt: "Industry Guest Lecture" },
+    { src: "/arena/arena10.png", alt: "Mentorship Session" },
+    { src: "/arena/arena11.png", alt: "Hands-on Project Work" },
+    { src: "/arena/arena12.png", alt: "Graduation Celebration" },
 ];
 
-const EmpowermentArena = () => {
-    return (
-        <section id="empowerment-arena" className="relative py-24 md:py-32 bg-[#0B1C2D] overflow-hidden">
-            <ParticleBackground />
+const Lightbox = ({
+    images,
+    currentIndex,
+    onClose,
+    onNext,
+    onPrev
+}: {
+    images: ImageItem[],
+    currentIndex: number,
+    onClose: () => void,
+    onNext: () => void,
+    onPrev: () => void
+}) => {
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape") onClose();
+            if (e.key === "ArrowRight") onNext();
+            if (e.key === "ArrowLeft") onPrev();
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        document.body.style.overflow = "hidden";
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+            document.body.style.overflow = "auto";
+        };
+    }, [onClose, onNext, onPrev]);
 
-            {/* Radial Glows */}
-            <div className="absolute -top-48 -left-48 w-96 h-96 bg-[#D4AF37]/10 rounded-full blur-[120px] pointer-events-none" />
-            <div className="absolute -bottom-48 -right-48 w-96 h-96 bg-[#D4AF37]/10 rounded-full blur-[120px] pointer-events-none" />
+    return (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-[#0B1C2D]/95 backdrop-blur-xl flex items-center justify-center p-4 md:p-8"
+            onClick={onClose}
+        >
+            <button
+                onClick={onClose}
+                className="absolute top-6 right-6 text-white/70 hover:text-accent transition-colors z-20"
+            >
+                <X size={32} />
+            </button>
+
+            <button
+                onClick={(e) => { e.stopPropagation(); onPrev(); }}
+                className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 bg-white/5 hover:bg-white/10 text-white p-3 rounded-full transition-all z-20"
+            >
+                <ChevronLeft size={32} />
+            </button>
+
+            <button
+                onClick={(e) => { e.stopPropagation(); onNext(); }}
+                className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 bg-white/5 hover:bg-white/10 text-white p-3 rounded-full transition-all z-20"
+            >
+                <ChevronRight size={32} />
+            </button>
+
+            <div
+                className="relative max-w-5xl w-full h-full flex items-center justify-center p-4"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <AnimatePresence mode="wait">
+                    <motion.img
+                        key={currentIndex}
+                        src={images[currentIndex].src}
+                        alt={images[currentIndex].alt}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 1.05 }}
+                        transition={{ duration: 0.3 }}
+                        className="max-w-full max-h-full object-contain rounded-xl shadow-2xl"
+                    />
+                </AnimatePresence>
+
+                {/* Image Counter */}
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/50 text-sm font-medium">
+                    {currentIndex + 1} / {images.length}
+                </div>
+            </div>
+        </motion.div>
+    );
+};
+
+const EmpowermentArena = () => {
+    const [selectedImage, setSelectedImage] = useState<number | null>(null);
+
+    const handleNext = () => {
+        if (selectedImage !== null) {
+            setSelectedImage((selectedImage + 1) % IMAGES.length);
+        }
+    };
+
+    const handlePrev = () => {
+        if (selectedImage !== null) {
+            setSelectedImage((selectedImage - 1 + IMAGES.length) % IMAGES.length);
+        }
+    };
+
+    return (
+        <section id="empowerment-arena" className="section-dark py-24 md:py-32 relative overflow-hidden bg-[#0B1C2D]">
+            {/* Background Decorations */}
+            <div className="absolute inset-0 hero-grid opacity-10 pointer-events-none" />
+            <div className="absolute top-1/4 -left-24 w-96 h-96 bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute bottom-1/4 -right-24 w-96 h-96 bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
 
             <div className="max-w-7xl mx-auto px-6 relative z-10">
-                <div className="text-center mb-20">
-                    <motion.h2
+                {/* Heading Section */}
+                <div className="text-center mb-16 md:mb-24">
+                    <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="text-4xl md:text-6xl font-bold text-white mb-4"
                     >
-                        Empowerment <span className="bg-gradient-to-r from-[#D4AF37] to-[#F1C40F] bg-clip-text text-transparent italic">Arena</span>
-                    </motion.h2>
-                    <motion.div
-                        initial={{ width: 0 }}
-                        whileInView={{ width: "120px" }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8, delay: 0.2 }}
-                        className="h-1 bg-[#D4AF37] mx-auto rounded-full shadow-[0_0_15px_rgba(212,175,55,0.4)]"
-                    />
+                        <h2 className="text-4xl md:text-6xl font-bold text-white inline-block relative">
+                            Empowerment <span className="text-accent italic">Arena</span>
+                            <motion.div
+                                initial={{ width: 0 }}
+                                whileInView={{ width: "100%" }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.5, duration: 0.8 }}
+                                className="absolute -bottom-2 left-0 h-[3px] bg-accent rounded-full"
+                            />
+                        </h2>
+                    </motion.div>
                     <motion.p
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true }}
-                        transition={{ delay: 0.4 }}
-                        className="mt-6 text-white/60 text-lg md:text-xl font-medium"
+                        transition={{ delay: 0.3 }}
+                        className="mt-8 text-white/50 text-lg md:text-xl font-medium"
                     >
-                        Where Learning Transforms Into Leadership
+                        Moments of Growth, Leadership & Success
                     </motion.p>
                 </div>
 
-                {/* Dynamic Mobile Layout - 4 Horizontal Rows */}
-                <div className="md:hidden flex flex-col gap-[14px] overflow-hidden">
-                    <style>
-                        {`
-                        @keyframes scrollRight {
-                            0% { transform: translateX(-20%); }
-                            100% { transform: translateX(0%); }
-                        }
-                        @keyframes scrollLeft {
-                            0% { transform: translateX(0%); }
-                            100% { transform: translateX(-20%); }
-                        }
-                        .row-right {
-                            animation: scrollRight 18s linear infinite;
-                        }
-                        .row-left {
-                            animation: scrollLeft 18s linear infinite;
-                        }
-                        `}
-                    </style>
-
-                    {/* Row 1 -> scroll right */}
-                    <div className="flex gap-[12px] w-max row-right">
-                        {[...images.slice(0, 3), ...images.slice(0, 3)].map((img, idx) => (
-                            <img
-                                key={`r1-${idx}`}
-                                src={img.src}
-                                alt="Arena"
-                                className="w-[140px] h-[120px] object-cover shrink-0 rounded-[16px]"
-                            />
-                        ))}
-                    </div>
-
-                    {/* Row 2 -> scroll left */}
-                    <div className="flex gap-[12px] w-max row-left">
-                        {[...images.slice(3, 6), ...images.slice(3, 6)].map((img, idx) => (
-                            <img
-                                key={`r2-${idx}`}
-                                src={img.src}
-                                alt="Arena"
-                                className="w-[140px] h-[120px] object-cover shrink-0 rounded-[16px]"
-                            />
-                        ))}
-                    </div>
-
-                    {/* Row 3 -> scroll right */}
-                    <div className="flex gap-[12px] w-max row-right">
-                        {[...images.slice(6, 9), ...images.slice(6, 9)].map((img, idx) => (
-                            <img
-                                key={`r3-${idx}`}
-                                src={img.src}
-                                alt="Arena"
-                                className="w-[140px] h-[120px] object-cover shrink-0 rounded-[16px]"
-                            />
-                        ))}
-                    </div>
-
-                    {/* Row 4 -> scroll left */}
-                    <div className="flex gap-[12px] w-max row-left">
-                        {[...images.slice(9, 12), ...images.slice(9, 12)].map((img, idx) => (
-                            <img
-                                key={`r4-${idx}`}
-                                src={img.src}
-                                alt="Arena"
-                                className="w-[140px] h-[120px] object-cover shrink-0 rounded-[16px]"
-                            />
-                        ))}
-                    </div>
-                </div>
-
-                {/* Masonry Layout - Desktop Only */}
-                <div className="hidden md:columns-2 lg:columns-4 gap-6 space-y-6">
-                    {images.map((img, idx) => (
+                {/* Masonry Grid */}
+                <div className="masonry-grid columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
+                    {IMAGES.map((img, idx) => (
                         <motion.div
                             key={idx}
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
                             viewport={{ once: true }}
-                            transition={{ delay: idx * 0.05, duration: 0.5 }}
+                            transition={{
+                                duration: 0.5,
+                                delay: idx % 4 * 0.1
+                            }}
                             className="break-inside-avoid"
                         >
-                            <div className="group relative bg-white/5 backdrop-blur-md rounded-[18px] p-2 border border-white/10 overflow-hidden transition-all duration-400 hover:-translate-y-2 hover:border-[#D4AF37]/50 hover:shadow-[0_0_30px_rgba(212,175,55,0.2)] cursor-pointer">
-                                <div className={`relative overflow-hidden rounded-[14px] ${img.height}`}>
-                                    <motion.img
-                                        src={img.src}
-                                        alt={`Arena moment ${idx + 1}`}
-                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                        loading="lazy"
-                                    />
-                                    <div className="absolute inset-0 bg-[#0B1C2D]/0 transition-colors duration-400 group-hover:bg-[#0B1C2D]/30" />
-                                </div>
+                            <div
+                                onClick={() => setSelectedImage(idx)}
+                                className="group relative rounded-2xl overflow-hidden cursor-pointer bg-secondary/20 border border-white/5 transition-all duration-500 hover:border-accent/40 hover:shadow-[0_10px_30px_rgba(212,175,55,0.15)]"
+                            >
+                                <img
+                                    src={img.src}
+                                    alt={img.alt}
+                                    loading="lazy"
+                                    className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+                                />
+
+                                {/* Hover Overlay */}
+                                <div className="absolute inset-0 bg-[#0B1C2D]/0 group-hover:bg-[#0B1C2D]/35 transition-all duration-300 pointer-events-none" />
+
+                                {/* Glowy Yellow Border (Hover) */}
+                                <div className="absolute inset-0 border-2 border-transparent group-hover:border-accent group-hover:shadow-[inset_0_0_20px_rgba(212,175,55,0.4),0_0_20px_rgba(212,175,55,0.4)] rounded-2xl transition-all duration-300 pointer-events-none" />
                             </div>
                         </motion.div>
                     ))}
                 </div>
 
+                {/* CTA Section */}
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="text-center mt-20"
+                    className="mt-24 md:mt-32 text-center"
                 >
-                    <h3 className="text-2xl md:text-3xl font-bold text-white mb-8">Step Into Your Future With Confidence</h3>
-                    <Link to="/apply" className="group relative px-10 py-4 bg-[#D4AF37] text-[#0B1C2D] font-bold rounded-full overflow-hidden transition-all duration-300 hover:bg-[#0B1C2D] hover:text-[#D4AF37] shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:shadow-[0_0_40px_rgba(212,175,55,0.5)] active:scale-95 inline-block">
-                        <span className="relative z-10 flex items-center justify-center gap-2">
-                            Become Part of the Arena <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-                        </span>
+                    <h3 className="text-2xl md:text-3xl font-bold text-white mb-8">
+                        Step Into Your Future With Confidence
+                    </h3>
+                    <Link
+                        to="/apply"
+                        className="group inline-flex items-center gap-2 bg-accent text-accent-foreground px-10 py-4 rounded-full font-bold text-lg shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:shadow-[0_0_40px_rgba(212,175,55,0.5)] hover:scale-[1.03] active:scale-[0.98] transition-all duration-300"
+                    >
+                        Become Part of the Arena
+                        <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
                     </Link>
                 </motion.div>
             </div>
+
+            {/* Lightbox Modal */}
+            <AnimatePresence>
+                {selectedImage !== null && (
+                    <Lightbox
+                        images={IMAGES}
+                        currentIndex={selectedImage}
+                        onClose={() => setSelectedImage(null)}
+                        onNext={handleNext}
+                        onPrev={handlePrev}
+                    />
+                )}
+            </AnimatePresence>
         </section>
     );
 };

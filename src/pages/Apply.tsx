@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Send, CheckCircle2, ChevronDown, Sparkles, AlertCircle } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { supabase, crmSupabase } from "@/lib/supabase";
 import { Link } from "react-router-dom";
 
 const courses = [
@@ -50,28 +50,50 @@ const Apply = () => {
         }
 
         try {
-            const { error: supabaseError } = await supabase
+            // 1. Submit to Local Supabase (snake_case)
+            const localPromise = supabase
+                .from("leads")
+                .insert([
+                    {
+                        name: form.name,
+                        phone: form.phone,
+                        email: form.email,
+                        course: form.course,
+                        branch: form.branch,
+                        created_at: new Date().toISOString(),
+                    },
+                ]);
+
+            // 2. Submit to CRM Supabase (camelCase)
+            const crmPromise = crmSupabase
                 .from("leads")
                 .insert([
                     {
                         firstName: form.name.split(' ')[0],
-                        lastName: form.name.split(' ').slice(1).join(' ') || '', // Use empty string if no last name
+                        lastName: form.name.split(' ').slice(1).join(' ') || '',
                         phone: form.phone,
                         email: form.email,
                         interestedCourse: form.course,
                         location: form.branch,
-                        notes: `Preferred Branch: ${form.branch}`, // Backup in case location is unused
+                        notes: `Preferred Branch: ${form.branch}`,
                         source: "Website Enquiry",
                         status: "NEW",
                         createdAt: new Date().toISOString(),
                     },
                 ]);
 
-            if (supabaseError) throw supabaseError;
+            // Execute both insertions
+            const [localResult, crmResult] = await Promise.all([localPromise, crmPromise]);
+
+            if (localResult.error) throw localResult.error;
+            if (crmResult.error) {
+                console.error("CRM Sync Error:", crmResult.error);
+                // We proceed if local was successful, but log the CRM error
+            }
 
             setSubmitted(true);
         } catch (err: any) {
-            console.error("Supabase error:", err);
+            console.error("Submission error:", err);
             setError("Something went wrong. Please try again or contact us directly.");
         } finally {
             setLoading(false);

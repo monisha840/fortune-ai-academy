@@ -84,3 +84,65 @@ export const courses = [
 ];
 
 export const categories = ["All", "Design", "Development", "Commerce"] as const;
+
+export const placedStudentsData = [
+    {
+        image_url: "/students/student7.png",
+        name: "Nithyasri V",
+        company: "Innovation LLP",
+        location: "Chennai, India",
+    },
+    {
+        image_url: "/students/student8.png",
+        name: "Geetha S",
+        company: "Whistle",
+        location: "Chennai, India",
+    },
+    {
+        image_url: "/students/student9.png",
+        name: "Gayathri G",
+        company: "My Bean Infotech",
+        location: "Coimbatore, India",
+    },
+    {
+        image_url: "/students/student10.png",
+        name: "Manikandan M",
+        company: "The Coding Cult",
+        location: "Hyderabad, India",
+    },
+    {
+        image_url: "/students/student11.png",
+        name: "Suberiya M",
+        company: "EPX Creatives",
+        location: "Kangeyam, India",
+    },
+    {
+        image_url: "/students/student12.png",
+        name: "Tamizharasan J",
+        company: "Cloud and Clouds",
+        location: "Singapore",
+    },
+];
+
+export const faqs = [
+    {
+        question: "Do you offer placement assistance after the course?",
+        answer: "Yes, we provide 100% placement support. Our dedicated career cell works with top tech companies and design firms to ensure our students get placed in their dream roles."
+    },
+    {
+        question: "Are these courses suitable for absolute beginners?",
+        answer: "Absolutely. Our curriculum is designed to take you from zero to expert. We start with fundamental concepts and gradually move towards advanced, industry-level projects."
+    },
+    {
+        question: "Do I get a certificate upon completion?",
+        answer: "Yes, you will receive an industry-recognized certification from Fortune Academy, along with a portfolio of live projects that you can showcase to employers."
+    },
+    {
+        question: "What is the mode of training?",
+        answer: "We offer both classroom-based intensive training and interactive online sessions. Both modes involve hands-on projects and direct mentorship from industry experts."
+    },
+    {
+        question: "Can I pay the course fee in installments?",
+        answer: "Yes, we have flexible payment plans and EMI options to make our premium education accessible to everyone."
+    }
+];

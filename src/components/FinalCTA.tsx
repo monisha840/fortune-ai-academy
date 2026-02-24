@@ -1,7 +1,106 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Sparkles, User, Send } from "lucide-react";
+import { Sparkles, User, Send, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { supabase, crmSupabase } from "@/lib/supabase";
 
 const FinalCTA = () => {
+  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const [form, setForm] = useState({
+    name: "",
+    phone: "",
+    course: "UI/UX Design",
+    branch: "Erode",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+    setError(null);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    if (!form.name || !form.phone) {
+      setError("Please fill in your name and phone number.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // 1. Submit to Local Supabase (snake_case)
+      const localPromise = supabase
+        .from("leads")
+        .insert([
+          {
+            name: form.name,
+            phone: form.phone,
+            course: form.course,
+            branch: form.branch,
+            created_at: new Date().toISOString(),
+          },
+        ]);
+
+      // 2. Submit to CRM Supabase (camelCase)
+      const crmPromise = crmSupabase
+        .from("leads")
+        .insert([
+          {
+            firstName: form.name.split(' ')[0],
+            lastName: form.name.split(' ').slice(1).join(' ') || '',
+            phone: form.phone,
+            email: "", // Not collected in FinalCTA
+            interestedCourse: form.course,
+            location: form.branch,
+            notes: `Preferred Branch: ${form.branch}`,
+            source: "Final CTA Section",
+            status: "NEW",
+            createdAt: new Date().toISOString(),
+          },
+        ]);
+
+      // Execute both insertions
+      const [localResult, crmResult] = await Promise.all([localPromise, crmPromise]);
+
+      if (localResult.error) throw localResult.error;
+      if (crmResult.error) {
+        console.error("CRM Sync Error:", crmResult.error);
+        // Proceed if local was successful
+      }
+
+      setSubmitted(true);
+    } catch (err: any) {
+      console.error("Submission error:", err);
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (submitted) {
+    return (
+      <section id="demo" className="relative py-20 px-4 md:px-10">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="max-w-7xl mx-auto overflow-hidden rounded-[2.5rem] shadow-2xl bg-navy-deep p-12 md:p-20 text-center flex flex-col items-center justify-center min-h-[400px] gold-glow-box"
+        >
+          <div className="w-20 h-20 bg-accent/10 rounded-full flex items-center justify-center mb-6">
+            <CheckCircle2 size={40} className="text-accent" />
+          </div>
+          <h2 className="text-4xl font-display font-bold text-white mb-4">Application Received!</h2>
+          <p className="text-white/60 text-lg max-w-md">
+            Thank you <span className="text-accent font-bold">{form.name}</span>! Our team will contact you on <span className="text-white font-bold">{form.phone}</span> very soon.
+          </p>
+        </motion.div>
+      </section>
+    );
+  }
+
   return (
     <section id="demo" className="relative py-20 px-4 md:px-10">
       <div className="max-w-7xl mx-auto overflow-hidden rounded-[2.5rem] shadow-2xl flex flex-col lg:flex-row">
@@ -85,29 +184,42 @@ const FinalCTA = () => {
 
             <h3 className="text-3xl font-bold text-white mb-8">Secure Your Spot</h3>
 
-            <form className="space-y-6 relative z-10">
+            <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
               <div className="space-y-2">
                 <label className="text-white/70 text-xs font-bold uppercase tracking-widest ml-1">Full Name</label>
                 <input
+                  name="name"
                   type="text"
+                  value={form.name}
+                  onChange={handleChange}
                   placeholder="e.g. Rahul Kumar"
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white focus:outline-none focus:border-accent/50 focus:bg-white/10 transition-all placeholder:text-white/20"
+                  required
                 />
               </div>
 
               <div className="space-y-2">
                 <label className="text-white/70 text-xs font-bold uppercase tracking-widest ml-1">WhatsApp Number</label>
                 <input
+                  name="phone"
                   type="tel"
+                  value={form.phone}
+                  onChange={handleChange}
                   placeholder="+91 00000 00000"
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white focus:outline-none focus:border-accent/50 focus:bg-white/10 transition-all placeholder:text-white/20"
+                  required
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-white/70 text-xs font-bold uppercase tracking-widest ml-1">Course</label>
-                  <select className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white focus:outline-none focus:border-accent/50 focus:bg-white/10 transition-all appearance-none cursor-pointer">
+                  <select
+                    name="course"
+                    value={form.course}
+                    onChange={handleChange}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white focus:outline-none focus:border-accent/50 focus:bg-white/10 transition-all appearance-none cursor-pointer"
+                  >
                     <option className="bg-navy" value="UI/UX Design">UI/UX Design</option>
                     <option className="bg-navy" value="Full Stack Development">Full Stack Development</option>
                     <option className="bg-navy" value="Graphic Designing">Graphic Designing</option>
@@ -120,7 +232,12 @@ const FinalCTA = () => {
                 </div>
                 <div className="space-y-2">
                   <label className="text-white/50 text-xs font-bold uppercase tracking-widest ml-1">Branch</label>
-                  <select className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white focus:outline-none focus:border-accent/50 focus:bg-white/10 transition-all appearance-none cursor-pointer">
+                  <select
+                    name="branch"
+                    value={form.branch}
+                    onChange={handleChange}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white focus:outline-none focus:border-accent/50 focus:bg-white/10 transition-all appearance-none cursor-pointer"
+                  >
                     <option className="bg-navy" value="Erode">Erode</option>
                     <option className="bg-navy" value="Coimbatore">Coimbatore</option>
                     <option className="bg-navy" value="Salem">Salem</option>
@@ -129,14 +246,32 @@ const FinalCTA = () => {
                 </div>
               </div>
 
+              {error && (
+                <div className="flex items-center gap-2 text-red-400 text-xs mt-2">
+                  <AlertCircle size={14} />
+                  {error}
+                </div>
+              )}
+
               <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full bg-accent text-navy font-black text-lg py-5 rounded-xl shadow-lg shadow-accent/20 flex items-center justify-center gap-3 relative overflow-hidden group"
+                type="submit"
+                disabled={loading}
+                whileHover={{ scale: loading ? 1 : 1.02 }}
+                whileTap={{ scale: loading ? 1 : 0.98 }}
+                className="w-full bg-accent text-navy font-black text-lg py-5 rounded-xl shadow-lg shadow-accent/20 flex items-center justify-center gap-3 relative overflow-hidden group disabled:opacity-70 cursor-pointer"
               >
                 <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 pointer-events-none" />
-                SECURE MY SPOT ✨
-                <Send size={20} />
+                {loading ? (
+                  <>
+                    <Loader2 size={20} className="animate-spin" />
+                    PROCESSING...
+                  </>
+                ) : (
+                  <>
+                    SECURE MY SPOT ✨
+                    <Send size={20} />
+                  </>
+                )}
               </motion.button>
 
               <p className="text-center text-white/50 text-xs mt-6">

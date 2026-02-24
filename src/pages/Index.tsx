@@ -30,7 +30,6 @@ const Index = () => {
       <TestimonialSection />
       <FinalCTA />
 
-
       <Footer />
     </div>
   );
