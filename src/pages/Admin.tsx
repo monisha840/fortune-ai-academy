@@ -16,6 +16,7 @@ import {
     UserCheck
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import logo from "@/assets/logo.png";
 
 import AdminCourses from "@/components/admin/AdminCourses";
 import AdminTestimonials from "@/components/admin/AdminTestimonials";
@@ -87,7 +88,7 @@ const AdminOverview = () => {
 };
 
 const Admin = () => {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 768);
     const navigate = useNavigate();
 
     const handleLogout = async () => {
@@ -105,9 +106,11 @@ const Admin = () => {
 
     return (
         <div className="min-h-screen bg-navy text-white flex flex-col md:flex-row">
-            {/* Mobile Header */}
-            <div className="md:hidden flex items-center justify-between p-4 border-b border-white/10 bg-navy/50 backdrop-blur-lg">
-                <div className="font-display font-black text-xl text-gradient-gold">FORTUNE ADMIN</div>
+            <div className="md:hidden sticky top-0 z-30 flex items-center justify-between p-4 border-b border-white/10 bg-navy/80 backdrop-blur-lg">
+                <div className="flex items-center gap-2">
+                    <img src={logo} alt="Fortune Innovatives" className="h-6 w-auto object-contain" />
+                    <div className="font-display font-black text-xl text-gradient-gold">FORTUNE ADMIN</div>
+                </div>
                 <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 text-white">
                     {isSidebarOpen ? <X /> : <Menu />}
                 </button>
@@ -119,7 +122,10 @@ const Admin = () => {
         ${isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
       `}>
                 <div className="p-8 pb-4 hidden md:block">
-                    <div className="font-display font-black text-2xl text-gradient-gold tracking-tight">FORTUNE</div>
+                    <div className="flex items-center gap-3 mb-2">
+                        <img src={logo} alt="Fortune Innovatives" className="h-8 w-auto object-contain" />
+                        <div className="font-display font-black text-2xl text-gradient-gold tracking-tight">FORTUNE</div>
+                    </div>
                     <p className="text-white/20 text-[10px] font-bold uppercase tracking-[0.3em] mt-1">Admin Dashboard</p>
                 </div>
 
@@ -152,9 +158,9 @@ const Admin = () => {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
-                <ScrollArea className="flex-1 p-6 md:p-12">
-                    <div className="max-w-5xl mx-auto">
+            <main className="flex-1 flex flex-col min-w-0">
+                <div className="flex-1 overflow-y-auto overflow-x-hidden">
+                    <div className="p-4 md:p-12 max-w-5xl mx-auto w-full">
                         <Routes>
                             <Route index element={<AdminOverview />} />
                             <Route path="courses" element={<AdminCourses />} />
@@ -163,7 +169,7 @@ const Admin = () => {
                             <Route path="leads" element={<AdminLeads />} />
                         </Routes>
                     </div>
-                </ScrollArea>
+                </div>
             </main>
 
             {/* Mobile Overlay */}

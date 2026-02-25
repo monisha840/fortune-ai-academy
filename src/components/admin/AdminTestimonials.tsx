@@ -140,23 +140,23 @@ const AdminTestimonials = () => {
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                     <h1 className="text-3xl font-bold font-display text-white">Testimonial Management</h1>
                     <p className="text-white/40 text-sm mt-1">Manage student placement success stories</p>
                 </div>
-                <Button onClick={() => handleOpenDialog()} className="bg-accent hover:bg-gold text-navy font-bold gap-2">
+                <Button onClick={() => handleOpenDialog()} className="bg-accent hover:bg-gold text-navy font-bold gap-2 w-full sm:w-auto">
                     <Plus size={18} /> Add New Success Story
                 </Button>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-sm">
+            <div className="bg-white/5 border border-white/10 rounded-2xl backdrop-blur-sm overflow-x-auto">
                 {loading && !isDialogOpen ? (
                     <div className="flex items-center justify-center py-20">
                         <Loader2 className="animate-spin text-accent" size={40} />
                     </div>
                 ) : (
-                    <Table>
+                    <Table className="min-w-[800px]">
                         <TableHeader className="bg-white/5">
                             <TableRow className="border-white/10 hover:bg-transparent">
                                 <TableHead className="text-white/60">Order</TableHead>

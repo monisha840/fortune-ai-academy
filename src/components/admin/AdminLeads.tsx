@@ -47,20 +47,20 @@ const AdminLeads = () => {
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                     <h1 className="text-3xl font-bold font-display text-white">Lead Management</h1>
                     <p className="text-white/40 text-sm mt-1">Track and manage business enquiries</p>
                 </div>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-sm">
+            <div className="bg-white/5 border border-white/10 rounded-2xl backdrop-blur-sm overflow-x-auto">
                 {loading ? (
                     <div className="flex items-center justify-center py-20">
                         <Loader2 className="animate-spin text-accent" size={40} />
                     </div>
                 ) : (
-                    <Table>
+                    <Table className="min-w-[800px]">
                         <TableHeader className="bg-white/5">
                             <TableRow className="border-white/10 hover:bg-transparent">
                                 <TableHead className="text-white/60">Date</TableHead>
