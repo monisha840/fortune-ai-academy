@@ -141,7 +141,7 @@ const TestimonialSection = () => {
     });
 
     return (
-        <section className="relative py-24 md:py-32 overflow-hidden bg-navy-deep">
+        <section id="testimonials" className="relative py-24 md:py-32 overflow-hidden bg-navy-deep">
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
                 <div
                     className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[500px] rounded-full blur-[120px] opacity-25"

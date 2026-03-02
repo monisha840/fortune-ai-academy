@@ -8,7 +8,11 @@ import NotFound from "./pages/NotFound";
 import Apply from "./pages/Apply";
 import AdminLogin from "./pages/AdminLogin";
 import Admin from "./pages/Admin";
+import Courses from "./pages/Courses";
+import WhyUs from "./pages/WhyUs";
+import Contact from "./pages/Contact";
 import WhatsAppButton from "./components/WhatsAppButton";
+import ScrollToTop from "./components/ScrollToTop";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -19,9 +23,13 @@ const AppContent = () => {
 
   return (
     <>
+      <ScrollToTop />
       {!isAdminPath && <WhatsAppButton />}
       <Routes>
         <Route path="/" element={<Index />} />
+        <Route path="/courses" element={<Courses />} />
+        <Route path="/why-us" element={<WhyUs />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/apply" element={<Apply />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route

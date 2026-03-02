@@ -45,10 +45,18 @@ const branches = [
 
 const BranchSection = () => {
   const [flippedIndex, setFlippedIndex] = useState<number | null>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [suppressedHoverIndex, setSuppressedHoverIndex] = useState<number | null>(null);
 
   const handleFlip = (index: number) => {
     setFlippedIndex(flippedIndex === index ? null : index);
+    setSuppressedHoverIndex(null); // Reset suppression on manual flip
   };
+
+  const isCardActive = (index: number) =>
+    flippedIndex === index || (hoveredIndex === index && suppressedHoverIndex !== index);
+
+  const isAnyCardActive = flippedIndex !== null || (hoveredIndex !== null && suppressedHoverIndex !== hoveredIndex);
 
   return (
     <section id="branches" className="section-light py-24 md:py-32 relative overflow-hidden">
@@ -78,13 +86,21 @@ const BranchSection = () => {
               key={branch.city}
               className={cn(
                 "relative h-[220px] md:h-[420px] w-full cursor-pointer group perspective-container",
-                flippedIndex !== null && flippedIndex !== index && "opacity-60 blur-[1px] scale-95 transition-all duration-500"
+                isAnyCardActive && !isCardActive(index) && "opacity-60 blur-[1px] scale-95 transition-all duration-500"
               )}
               onClick={() => handleFlip(index)}
+              onMouseEnter={() => {
+                setHoveredIndex(index);
+                setSuppressedHoverIndex(null);
+              }}
+              onMouseLeave={() => {
+                setHoveredIndex(null);
+                setSuppressedHoverIndex(null);
+              }}
             >
               <motion.div
                 className="w-full h-full relative preserve-3d transition-all duration-700 ease-in-out"
-                animate={{ rotateY: flippedIndex === index ? 180 : 0 }}
+                animate={{ rotateY: isCardActive(index) ? 180 : 0 }}
               >
                 {/* --- FRONT SIDE --- */}
                 <div className="absolute inset-0 w-full h-full backface-hidden rounded-xl md:rounded-2xl bg-white/50 backdrop-blur-sm border border-border shadow-lg hover:shadow-xl hover:border-accent/30 transition-all duration-300 flex flex-col items-center justify-between p-3 md:p-6 text-center group-hover:-translate-y-2">
@@ -126,13 +142,15 @@ const BranchSection = () => {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleFlip(index);
+                        setSuppressedHoverIndex(index);
+                        setFlippedIndex(null);
                       }}
                       className="absolute top-2 right-2 p-1.5 md:p-2 bg-black/60 hover:bg-black/80 text-white rounded-full backdrop-blur-sm transition-colors z-10"
                     >
                       <X className="w-3 h-3 md:w-4 md:h-4" />
                     </button>
                   </div>
+
 
                   {/* Content */}
                   <div className="h-[52%] p-2.5 md:p-6 flex flex-col justify-between bg-gradient-to-b from-primary to-[#0a1630]">

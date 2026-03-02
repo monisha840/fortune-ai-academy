@@ -137,12 +137,12 @@ const HeroSection = () => {
           >
             Book Free Demo <ArrowRight size={18} />
           </Link>
-          <a
-            href="#courses"
+          <Link
+            to="/courses"
             className="border border-primary-foreground/30 text-primary-foreground px-8 py-3.5 rounded-lg font-semibold text-lg hover:border-accent hover:text-accent transition-all duration-300"
           >
             Explore Courses
-          </a>
+          </Link>
         </motion.div>
 
         {/* Trust strip */}
@@ -184,13 +184,43 @@ const HeroSection = () => {
           ))}
         </motion.div>
 
+        {/* Empowerment Arena Intro */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mt-20 pt-16 border-t border-white/10"
+        >
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="font-display text-xl md:text-2xl font-bold text-primary-foreground">
+              Empowerment <span className="text-gradient-gold">Arena</span>
+            </h3>
+            <Link to="/contact" className="text-accent hover:text-white transition-colors text-sm font-bold flex items-center gap-2 group">
+              View Gallery <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map((num) => (
+              <div key={num} className="aspect-video rounded-2xl overflow-hidden border border-white/10 group cursor-pointer relative">
+                <img
+                  src={`/arena/arena${num}.png`}
+                  alt={`Empowerment Arena ${num}`}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300" />
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2 }}
           className="mt-12"
         >
-          <a href="#journey" className="inline-block text-primary-foreground/40 animate-bounce">
+          <a href="#testimonials" className="inline-block text-primary-foreground/40 animate-bounce">
             <ChevronDown size={28} />
           </a>
         </motion.div>

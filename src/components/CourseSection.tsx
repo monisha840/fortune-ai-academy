@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { courses as initialCourses, categories } from "@/lib/constants";
 import { supabase } from "@/lib/supabase";
 
-const CourseSection = () => {
+const CourseSection = ({ preview = false }: { preview?: boolean }) => {
   const [courses, setCourses] = useState<any[]>(initialCourses);
   const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -48,7 +48,8 @@ const CourseSection = () => {
   }, []);
 
   const filtered = activeCategory === "All" ? courses : courses.filter((c) => c.category === activeCategory);
-  const activeCourse = filtered[activeIndex] || filtered[0];
+  const displayedCourses = preview ? filtered.slice(0, 3) : filtered;
+  const activeCourse = displayedCourses[activeIndex] || displayedCourses[0];
 
   const handleCategoryChange = (cat: string) => {
     setActiveCategory(cat);
@@ -91,23 +92,25 @@ const CourseSection = () => {
                 className="space-y-6"
               >
                 {/* Horizontal Categories */}
-                <div className="flex overflow-x-auto pb-4 gap-2 no-scrollbar">
-                  {categories.map((cat) => (
-                    <button
-                      key={cat}
-                      onClick={() => handleCategoryChange(cat)}
-                      className={`whitespace-nowrap px-4 py-2 rounded-full text-xs font-semibold transition-all duration-300 ${activeCategory === cat
-                        ? "bg-accent text-accent-foreground gold-glow-box"
-                        : "border border-border text-muted-foreground"
-                        }`}
-                    >
-                      {cat}
-                    </button>
-                  ))}
-                </div>
+                {!preview && (
+                  <div className="flex overflow-x-auto pb-4 gap-2 no-scrollbar">
+                    {categories.map((cat) => (
+                      <button
+                        key={cat}
+                        onClick={() => handleCategoryChange(cat)}
+                        className={`whitespace-nowrap px-4 py-2 rounded-full text-xs font-semibold transition-all duration-300 ${activeCategory === cat
+                          ? "bg-accent text-accent-foreground gold-glow-box"
+                          : "border border-border text-muted-foreground"
+                          }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                )}
 
                 <div className="space-y-4">
-                  {filtered.map((course, i) => (
+                  {displayedCourses.map((course, i) => (
                     <button
                       key={`${course.title}-${i}`}
                       onClick={() => handleCourseClick(i)}
@@ -133,6 +136,15 @@ const CourseSection = () => {
                     </button>
                   ))}
                 </div>
+
+                {preview && (
+                  <Link
+                    to="/courses"
+                    className="flex items-center justify-center gap-2 w-full py-4 border-2 border-accent text-accent rounded-2xl font-bold text-sm mt-8 hover:bg-accent/5 transition-colors"
+                  >
+                    View All Courses <ArrowRight size={16} />
+                  </Link>
+                )}
               </motion.div>
             ) : (
               /* MOBILE STEP 2: Course Detail */
@@ -219,7 +231,7 @@ const CourseSection = () => {
         <div className="hidden md:grid lg:grid-cols-[1fr_1.3fr] gap-0 border border-border rounded-2xl overflow-hidden min-h-[480px]">
           {/* Left: Course list */}
           <div className="bg-primary p-2 md:p-4 space-y-1 overflow-y-auto max-h-[520px]">
-            {filtered.map((course, i) => (
+            {displayedCourses.map((course, i) => (
               <button
                 key={`${course.title}-${i}`}
                 onClick={() => setActiveIndex(i)}
@@ -248,6 +260,15 @@ const CourseSection = () => {
                 <p className="text-primary-foreground/40 text-xs mt-0.5">{course.duration} · {course.salary}</p>
               </button>
             ))}
+
+            {preview && (
+              <Link
+                to="/courses"
+                className="flex items-center justify-center gap-2 w-full py-4 mt-4 text-accent border border-accent/30 rounded-xl hover:bg-accent/10 transition-colors font-bold text-sm"
+              >
+                View All Courses <ArrowRight size={16} />
+              </Link>
+            )}
           </div>
 
           {/* Right: Course details */}

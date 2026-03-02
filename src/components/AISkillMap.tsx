@@ -8,7 +8,9 @@ const nodes = [
   { label: "Career", desc: "Placement & growth" },
 ];
 
-const AISkillMap = () => {
+const AISkillMap = ({ isShort = false }: { isShort?: boolean }) => {
+  const displayedNodes = isShort ? nodes.slice(0, 3) : nodes;
+
   return (
     <section className="section-dark py-24 md:py-32 overflow-hidden">
       <div className="max-w-6xl mx-auto px-6">
@@ -29,7 +31,7 @@ const AISkillMap = () => {
           {/* Connecting line */}
           <div className="absolute top-1/2 left-[10%] right-[10%] h-px bg-secondary" />
 
-          {nodes.map((node, i) => (
+          {displayedNodes.map((node, i) => (
             <motion.div
               key={node.label}
               initial={{ opacity: 0, scale: 0.8 }}
@@ -49,7 +51,7 @@ const AISkillMap = () => {
 
         {/* Mobile vertical */}
         <div className="md:hidden space-y-8">
-          {nodes.map((node, i) => (
+          {displayedNodes.map((node, i) => (
             <motion.div
               key={node.label}
               initial={{ opacity: 0, x: -20 }}
