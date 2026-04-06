@@ -104,7 +104,6 @@ const TestimonialSection = () => {
     const trackRef = useRef<HTMLDivElement>(null);
     const xRef = useRef(0);
     const isPausedRef = useRef(false);
-    const [, forceUpdate] = useState(0);
 
     useEffect(() => {
         const fetchStudents = async () => {
@@ -137,7 +136,6 @@ const TestimonialSection = () => {
         if (trackRef.current) {
             trackRef.current.style.transform = `translateX(${xRef.current}px)`;
         }
-        forceUpdate((n) => n + 1);
     });
 
     return (

@@ -92,8 +92,13 @@ const Admin = () => {
     const navigate = useNavigate();
 
     const handleLogout = async () => {
-        await supabase.auth.signOut();
-        navigate("/admin/login");
+        try {
+            await supabase.auth.signOut();
+        } catch (err) {
+            console.error("Logout error:", err);
+        } finally {
+            navigate("/admin/login");
+        }
     };
 
     const navItems = [

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Send, CheckCircle2, ChevronDown, Sparkles, AlertCircle } from "lucide-react";
 import { supabase, crmSupabase } from "@/lib/supabase";
+import { isValidPhone, isValidEmail } from "@/lib/validation";
 import { Link } from "react-router-dom";
 
 const initialCourses = [
@@ -59,71 +60,85 @@ const Apply = () => {
         setLoading(true);
         setError(null);
 
-        // Validate all fields
         if (!form.name || !form.phone || !form.email || !form.course || !form.branch) {
             setError("Please fill in all fields before submitting.");
             setLoading(false);
             return;
         }
 
+        if (form.name.trim().length < 2 || form.name.trim().length > 100) {
+            setError("Please enter a valid name (2-100 characters).");
+            setLoading(false);
+            return;
+        }
+
+        if (!isValidPhone(form.phone)) {
+            setError("Please enter a valid phone number (10-15 digits).");
+            setLoading(false);
+            return;
+        }
+
+        if (!isValidEmail(form.email)) {
+            setError("Please enter a valid email address.");
+            setLoading(false);
+            return;
+        }
+
         try {
-            // 1. Submit to Local Supabase (snake_case)
-            const localPromise = supabase
+            const { error: localError } = await supabase
                 .from("leads")
                 .insert([
                     {
-                        name: form.name,
-                        phone: form.phone,
-                        email: form.email,
+                        name: form.name.trim(),
+                        phone: form.phone.trim(),
+                        email: form.email.trim(),
                         course: form.course,
                         branch: form.branch,
                         created_at: new Date().toISOString(),
                     },
                 ]);
 
-            // 2. Submit to CRM Supabase (camelCase)
-            const branchIdMap: Record<string, string> = {
-                "Erode": "ae1ebf77-14a0-4a76-a123-11b44b4517d3",
-                "Coimbatore": "f0feca6f-a037-43e2-9407-8175a234fc46",
-                "Salem": "1e736840-e93c-4259-8fd7-c24c28b14413",
-                "Tiruppur": "738587cc-6f2c-4f03-a386-4c3a376f4cc0"
-            };
+            if (localError) throw localError;
 
-            const crmPromise = crmSupabase
-                .from("leads")
-                .insert([
-                    {
-                        id: crypto.randomUUID(),
-                        firstName: form.name.split(' ')[0],
-                        lastName: form.name.split(' ').slice(1).join(' ') || '',
-                        phone: form.phone,
-                        email: form.email,
-                        interestedCourse: form.course,
-                        branchId: branchIdMap[form.branch] || null,
-                        source: "Website Enquiry",
-                        status: "NEW",
-                        createdAt: new Date().toISOString(),
-                        updatedAt: new Date().toISOString()
-                    },
-                ]);
-
-            // Execute both insertions
-            const [localResult, crmResult] = await Promise.all([localPromise, crmPromise]);
-
-            if (localResult.error) throw localResult.error;
-            if (crmResult.error) {
-                const fullError = {
-                    message: crmResult.error.message,
-                    details: crmResult.error.details,
-                    hint: crmResult.error.hint,
-                    code: crmResult.error.code
+            // CRM sync (non-blocking)
+            if (crmSupabase) {
+                const branchIdMap: Record<string, string> = {
+                    "Erode": "ae1ebf77-14a0-4a76-a123-11b44b4517d3",
+                    "Coimbatore": "f0feca6f-a037-43e2-9407-8175a234fc46",
+                    "Salem": "1e736840-e93c-4259-8fd7-c24c28b14413",
+                    "Tiruppur": "738587cc-6f2c-4f03-a386-4c3a376f4cc0"
                 };
-                console.error("CRM Sync Error Full Details (Stringified):", JSON.stringify(fullError, null, 2));
-                // We proceed if local was successful, but log the CRM error
+
+                const nameParts = form.name.trim().split(' ');
+                const firstName = nameParts[0];
+                const lastName = nameParts.slice(1).join(' ') || '';
+
+                crmSupabase
+                    .from("leads")
+                    .insert([
+                        {
+                            id: crypto.randomUUID(),
+                            firstName,
+                            lastName,
+                            phone: form.phone.trim(),
+                            email: form.email.trim(),
+                            interestedCourse: form.course,
+                            branchId: branchIdMap[form.branch] || null,
+                            source: "Website Enquiry",
+                            status: "NEW",
+                            createdAt: new Date().toISOString(),
+                            updatedAt: new Date().toISOString()
+                        },
+                    ])
+                    .then(({ error: crmError }) => {
+                        if (crmError) {
+                            console.error("CRM Sync Error:", crmError.message);
+                        }
+                    });
             }
 
             setSubmitted(true);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Submission error:", err);
             setError("Something went wrong. Please try again or contact us directly.");
         } finally {
@@ -146,7 +161,7 @@ const Apply = () => {
                     <p className="text-white/70 mb-2">Thank you, <span className="text-accent font-semibold">{form.name}</span>!</p>
                     <p className="text-white/60 mb-8">Our career counselors will reach out to you shortly to finalize your spot.</p>
                     <Link to="/" className="text-accent font-semibold hover:underline">
-                        ← Return Home
+                        &larr; Return Home
                     </Link>
                 </motion.div>
             </div>
@@ -234,6 +249,7 @@ const Apply = () => {
                                 onFocus={() => setFocused("name")}
                                 onBlur={() => setFocused(null)}
                                 required
+                                maxLength={100}
                                 className="w-full bg-transparent border-b border-white/20 py-3 text-white focus:outline-none focus:border-accent transition-colors"
                             />
                             <div className={`absolute bottom-0 left-0 h-[2px] bg-accent transition-all duration-300 ${focused === "name" ? "w-full" : "w-0"}`} />
@@ -252,6 +268,7 @@ const Apply = () => {
                                 onFocus={() => setFocused("phone")}
                                 onBlur={() => setFocused(null)}
                                 required
+                                maxLength={15}
                                 className="w-full bg-transparent border-b border-white/20 py-3 text-white focus:outline-none focus:border-accent transition-colors"
                             />
                             <div className={`absolute bottom-0 left-0 h-[2px] bg-accent transition-all duration-300 ${focused === "phone" ? "w-full" : "w-0"}`} />
@@ -270,6 +287,7 @@ const Apply = () => {
                                 onFocus={() => setFocused("email")}
                                 onBlur={() => setFocused(null)}
                                 required
+                                maxLength={254}
                                 className="w-full bg-transparent border-b border-white/20 py-3 text-white focus:outline-none focus:border-accent transition-colors"
                             />
                             <div className={`absolute bottom-0 left-0 h-[2px] bg-accent transition-all duration-300 ${focused === "email" ? "w-full" : "w-0"}`} />

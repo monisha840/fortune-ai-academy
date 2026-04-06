@@ -20,6 +20,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Edit2, Trash2, Save, Loader2, Building2, Globe, Image as ImageIcon } from "lucide-react";
 import DeleteConfirmDialog from "./DeleteConfirmDialog";
+import { isValidUrl, isValidImageUrl } from "@/lib/validation";
 
 interface HiringPartner {
     id: string;
@@ -83,6 +84,17 @@ const AdminHiringPartners = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (formData.logo_url && !isValidImageUrl(formData.logo_url)) {
+            toast({ variant: "destructive", title: "Invalid Logo URL", description: "Please enter a valid URL starting with http:// or https://, or a relative path starting with /" });
+            return;
+        }
+
+        if (formData.website_url && !isValidUrl(formData.website_url)) {
+            toast({ variant: "destructive", title: "Invalid Website URL", description: "Please enter a valid URL starting with http:// or https://" });
+            return;
+        }
+
         setIsSaving(true);
 
         const { id, ...dataToSave } = formData as HiringPartner;

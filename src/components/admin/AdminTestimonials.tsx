@@ -87,7 +87,7 @@ const AdminTestimonials = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
+        setIsSaving(true);
 
         const { id, ...dataToSave } = formData as Testimonial;
 
@@ -112,7 +112,7 @@ const AdminTestimonials = () => {
             setIsDialogOpen(false);
             fetchTestimonials();
         }
-        setLoading(false);
+        setIsSaving(false);
     };
 
     const handleDeleteClick = (id: string) => {
@@ -278,8 +278,8 @@ const AdminTestimonials = () => {
                             <Button type="button" variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-white/60 hover:text-white">
                                 Cancel
                             </Button>
-                            <Button type="submit" className="bg-accent hover:bg-gold text-navy font-bold gap-2 min-w-[120px]" disabled={loading}>
-                                {loading ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
+                            <Button type="submit" className="bg-accent hover:bg-gold text-navy font-bold gap-2 min-w-[120px]" disabled={isSaving}>
+                                {isSaving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
                                 {editingTestimonial ? "Update Record" : "Save Record"}
                             </Button>
                         </DialogFooter>

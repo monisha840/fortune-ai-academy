@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Sparkles, User, Send, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { supabase, crmSupabase } from "@/lib/supabase";
+import { isValidPhone } from "@/lib/validation";
 
 const FinalCTA = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -31,49 +32,64 @@ const FinalCTA = () => {
       return;
     }
 
+    if (form.name.trim().length < 2 || form.name.trim().length > 100) {
+      setError("Please enter a valid name (2-100 characters).");
+      setLoading(false);
+      return;
+    }
+
+    if (!isValidPhone(form.phone)) {
+      setError("Please enter a valid phone number (10-15 digits).");
+      setLoading(false);
+      return;
+    }
+
     try {
-      // 1. Submit to Local Supabase (snake_case)
-      const localPromise = supabase
+      const { error: localError } = await supabase
         .from("leads")
         .insert([
           {
-            name: form.name,
-            phone: form.phone,
+            name: form.name.trim(),
+            phone: form.phone.trim(),
             course: form.course,
             branch: form.branch,
             created_at: new Date().toISOString(),
           },
         ]);
 
-      // 2. Submit to CRM Supabase (camelCase)
-      const crmPromise = crmSupabase
-        .from("leads")
-        .insert([
-          {
-            firstName: form.name.split(' ')[0],
-            lastName: form.name.split(' ').slice(1).join(' ') || '',
-            phone: form.phone,
-            email: "", // Not collected in FinalCTA
-            interestedCourse: form.course,
-            location: form.branch,
-            notes: `Preferred Branch: ${form.branch}`,
-            source: "Final CTA Section",
-            status: "NEW",
-            createdAt: new Date().toISOString(),
-          },
-        ]);
+      if (localError) throw localError;
 
-      // Execute both insertions
-      const [localResult, crmResult] = await Promise.all([localPromise, crmPromise]);
+      // CRM sync (non-blocking)
+      if (crmSupabase) {
+        const nameParts = form.name.trim().split(' ');
+        const firstName = nameParts[0];
+        const lastName = nameParts.slice(1).join(' ') || '';
 
-      if (localResult.error) throw localResult.error;
-      if (crmResult.error) {
-        console.error("CRM Sync Error:", crmResult.error);
-        // Proceed if local was successful
+        crmSupabase
+          .from("leads")
+          .insert([
+            {
+              firstName,
+              lastName,
+              phone: form.phone.trim(),
+              email: "",
+              interestedCourse: form.course,
+              location: form.branch,
+              notes: `Preferred Branch: ${form.branch}`,
+              source: "Final CTA Section",
+              status: "NEW",
+              createdAt: new Date().toISOString(),
+            },
+          ])
+          .then(({ error: crmError }) => {
+            if (crmError) {
+              console.error("CRM Sync Error:", crmError.message);
+            }
+          });
       }
 
       setSubmitted(true);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Submission error:", err);
       setError("Something went wrong. Please try again.");
     } finally {
@@ -193,6 +209,7 @@ const FinalCTA = () => {
                   value={form.name}
                   onChange={handleChange}
                   placeholder="e.g. Rahul Kumar"
+                  maxLength={100}
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white focus:outline-none focus:border-accent/50 focus:bg-white/10 transition-all placeholder:text-white/20"
                   required
                 />
@@ -206,6 +223,7 @@ const FinalCTA = () => {
                   value={form.phone}
                   onChange={handleChange}
                   placeholder="+91 00000 00000"
+                  maxLength={15}
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white focus:outline-none focus:border-accent/50 focus:bg-white/10 transition-all placeholder:text-white/20"
                   required
                 />
@@ -231,7 +249,7 @@ const FinalCTA = () => {
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-white/50 text-xs font-bold uppercase tracking-widest ml-1">Branch</label>
+                  <label className="text-white/70 text-xs font-bold uppercase tracking-widest ml-1">Branch</label>
                   <select
                     name="branch"
                     value={form.branch}
@@ -268,7 +286,7 @@ const FinalCTA = () => {
                   </>
                 ) : (
                   <>
-                    SECURE MY SPOT ✨
+                    SECURE MY SPOT
                     <Send size={20} />
                   </>
                 )}

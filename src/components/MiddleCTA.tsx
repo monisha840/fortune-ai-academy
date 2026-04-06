@@ -1,15 +1,17 @@
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 
 const MiddleCTA = () => {
+    const prefersReducedMotion = useReducedMotion();
+
     return (
         <section className="relative py-24 md:py-32 overflow-hidden bg-[#0B1C2D]">
             {/* Background Design Elements */}
             <div className="absolute inset-0 z-0">
                 {/* Animated Glow Wave */}
                 <motion.div
-                    animate={{
+                    animate={prefersReducedMotion ? {} : {
                         scale: [1, 1.2, 1],
                         opacity: [0.1, 0.2, 0.1],
                         rotate: [0, 5, 0],
@@ -24,7 +26,7 @@ const MiddleCTA = () => {
 
                 {/* Subtle Light Streak */}
                 <motion.div
-                    animate={{
+                    animate={prefersReducedMotion ? {} : {
                         x: ["-100%", "100%"],
                         opacity: [0, 0.3, 0],
                     }}
@@ -72,7 +74,7 @@ const MiddleCTA = () => {
                     className="flex flex-col items-center gap-6"
                 >
                     <motion.div
-                        animate={{
+                        animate={prefersReducedMotion ? {} : {
                             y: [0, -6, 0],
                         }}
                         transition={{
@@ -86,7 +88,7 @@ const MiddleCTA = () => {
                             className="group relative inline-flex items-center gap-3 bg-[#D4AF37] text-[#0B1C2D] px-8 py-4 md:px-12 md:py-5 rounded-full font-black text-base md:text-lg transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:shadow-[0_0_40px_rgba(212,175,55,0.6)]"
                         >
                             {/* Pulse Glow Effect */}
-                            <span className="absolute inset-0 rounded-full bg-[#D4AF37] animate-ping opacity-20 pointer-events-none group-hover:opacity-40" />
+                            {!prefersReducedMotion && <span className="absolute inset-0 rounded-full bg-[#D4AF37] animate-ping opacity-20 pointer-events-none group-hover:opacity-40" />}
 
                             Start My Career Transformation
                             <ArrowRight size={22} className="group-hover:translate-x-1.5 transition-transform duration-300" />

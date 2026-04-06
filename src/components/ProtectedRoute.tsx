@@ -9,23 +9,28 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Check current session
         const checkUser = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            setUser(session?.user ?? null);
-            setLoading(false);
-
-            if (!session) {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session?.user) {
+                    setUser(session.user);
+                } else {
+                    navigate("/admin/login");
+                }
+            } catch {
                 navigate("/admin/login");
+            } finally {
+                setLoading(false);
             }
         };
 
         checkUser();
 
-        // Listen for auth state changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setUser(session?.user ?? null);
-            if (!session) {
+            if (session?.user) {
+                setUser(session.user);
+            } else {
+                setUser(null);
                 navigate("/admin/login");
             }
         });

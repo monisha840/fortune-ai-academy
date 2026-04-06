@@ -32,6 +32,7 @@ const FAQItem = ({ question, answer, isOpen, onClick }: {
         >
             <button
                 onClick={onClick}
+                aria-expanded={isOpen}
                 className="w-full flex items-center justify-between p-5 md:p-6 text-left transition-colors group cursor-pointer"
             >
                 <span className={`font-bold text-lg md:text-xl pr-8 transition-colors ${isOpen ? 'text-accent' : 'text-primary-foreground/90 group-hover:text-primary-foreground'}`}>

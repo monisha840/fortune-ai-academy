@@ -19,24 +19,33 @@ const AdminLogin = () => {
         e.preventDefault();
         setLoading(true);
 
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        });
+        try {
+            const { error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
 
-        if (error) {
+            if (error) {
+                toast({
+                    variant: "destructive",
+                    title: "Login Failed",
+                    description: "Invalid email or password.",
+                });
+            } else {
+                toast({
+                    title: "Welcome back!",
+                    description: "Successfully logged in to Admin Dashboard.",
+                });
+                navigate("/admin");
+            }
+        } catch {
             toast({
                 variant: "destructive",
-                title: "Login Failed",
-                description: error.message,
+                title: "Connection Error",
+                description: "Unable to reach the server. Please try again.",
             });
+        } finally {
             setLoading(false);
-        } else {
-            toast({
-                title: "Welcome back!",
-                description: "Successfully logged in to Admin Dashboard.",
-            });
-            navigate("/admin");
         }
     };
 
