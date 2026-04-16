@@ -17,6 +17,7 @@ const Admin = lazy(() => import("./pages/Admin"));
 const Courses = lazy(() => import("./pages/Courses"));
 const WhyUs = lazy(() => import("./pages/WhyUs"));
 const Contact = lazy(() => import("./pages/Contact"));
+const Gallery = lazy(() => import("./pages/Gallery"));
 
 const queryClient = new QueryClient();
 
@@ -84,6 +85,7 @@ const AppContent = () => {
           <Route path="/courses" element={<Courses />} />
           <Route path="/why-us" element={<WhyUs />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/gallery" element={<Gallery />} />
           <Route path="/apply" element={<Apply />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route

@@ -196,7 +196,7 @@ const HeroSection = () => {
             <h3 className="font-display text-xl md:text-2xl font-bold text-primary-foreground">
               Empowerment <span className="text-gradient-gold">Arena</span>
             </h3>
-            <Link to="/contact" className="text-accent hover:text-white transition-colors text-sm font-bold flex items-center gap-2 group">
+            <Link to="/gallery" className="text-accent hover:text-white transition-colors text-sm font-bold flex items-center gap-2 group">
               View Gallery <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
