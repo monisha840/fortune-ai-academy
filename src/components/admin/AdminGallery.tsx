@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/lib/supabase";
 import {
     Table,
@@ -35,11 +35,9 @@ import {
     Loader2,
     Image as ImageIcon,
     Star,
-    Upload,
 } from "lucide-react";
-
-const GALLERY_BUCKET = "gallery-images";
 import DeleteConfirmDialog from "./DeleteConfirmDialog";
+import ImageUploadField from "./ImageUploadField";
 
 type GalleryType = "arena" | "placement";
 
@@ -87,9 +85,6 @@ const AdminGallery = () => {
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<string | null>(null);
     const [fetchError, setFetchError] = useState<string | null>(null);
-
-    const [isUploading, setIsUploading] = useState(false);
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const { toast } = useToast();
 
@@ -222,87 +217,6 @@ const AdminGallery = () => {
         setIsSaving(false);
         setIsDeleteDialogOpen(false);
         setItemToDelete(null);
-    };
-
-    const handleFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        e.target.value = ""; // allow re-uploading the same file
-        if (!file) return;
-
-        if (!file.type.startsWith("image/")) {
-            toast({
-                variant: "destructive",
-                title: "Unsupported file",
-                description: "Please pick an image file.",
-            });
-            return;
-        }
-
-        // Hard cap 5 MB to keep the bucket tidy
-        const MAX_BYTES = 5 * 1024 * 1024;
-        if (file.size > MAX_BYTES) {
-            toast({
-                variant: "destructive",
-                title: "File too large",
-                description: "Images must be under 5 MB.",
-            });
-            return;
-        }
-
-        setIsUploading(true);
-        try {
-            // Build a unique, URL-safe filename under a folder matching the type
-            const ext = file.name.split(".").pop()?.toLowerCase() || "png";
-            const safeBase = file.name
-                .replace(/\.[^.]+$/, "")
-                .replace(/[^a-zA-Z0-9-_]+/g, "-")
-                .slice(0, 40)
-                .replace(/^-+|-+$/g, "");
-            const path = `${formData.type}/${Date.now()}-${safeBase || "image"}.${ext}`;
-
-            const { error: uploadError } = await supabase.storage
-                .from(GALLERY_BUCKET)
-                .upload(path, file, {
-                    cacheControl: "3600",
-                    upsert: false,
-                    contentType: file.type,
-                });
-
-            if (uploadError) {
-                toast({
-                    variant: "destructive",
-                    title: "Upload failed",
-                    description: uploadError.message.includes("Bucket not found")
-                        ? `Bucket "${GALLERY_BUCKET}" doesn't exist yet. Create it in Supabase → Storage (public bucket).`
-                        : uploadError.message,
-                });
-                return;
-            }
-
-            const { data } = supabase.storage.from(GALLERY_BUCKET).getPublicUrl(path);
-            if (!data?.publicUrl) {
-                toast({
-                    variant: "destructive",
-                    title: "Upload succeeded but no public URL returned",
-                    description: "Make sure the bucket is set to Public in Supabase → Storage.",
-                });
-                return;
-            }
-
-            setFormData((prev) => ({ ...prev, image_url: data.publicUrl }));
-            toast({
-                title: "Image uploaded",
-                description: "URL auto-filled. You can still edit it below.",
-            });
-        } catch (err) {
-            toast({
-                variant: "destructive",
-                title: "Unexpected upload error",
-                description: err instanceof Error ? err.message : String(err),
-            });
-        } finally {
-            setIsUploading(false);
-        }
     };
 
     const isPlacement = formData.type === "placement";
@@ -511,61 +425,14 @@ const AdminGallery = () => {
                             </div>
                         </div>
 
-                        {/* Image URL + upload */}
-                        <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                                <label className="text-sm font-semibold text-white/60">
-                                    Image <span className="text-destructive">*</span>
-                                </label>
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => fileInputRef.current?.click()}
-                                    disabled={isUploading}
-                                    className="text-accent hover:text-accent hover:bg-accent/10 gap-2 h-8"
-                                >
-                                    {isUploading ? (
-                                        <Loader2 className="animate-spin" size={14} />
-                                    ) : (
-                                        <Upload size={14} />
-                                    )}
-                                    {isUploading ? "Uploading…" : "Upload from device"}
-                                </Button>
-                                <input
-                                    ref={fileInputRef}
-                                    type="file"
-                                    accept="image/*"
-                                    className="hidden"
-                                    onChange={handleFileSelected}
-                                />
-                            </div>
-                            <Input
-                                value={formData.image_url}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, image_url: e.target.value })
-                                }
-                                placeholder="Upload from device, or paste https:// URL"
-                                className="bg-white/5 border-white/10 text-white"
-                                required
-                            />
-                            <p className="text-xs text-white/30">
-                                Upload a file (stored in Supabase bucket <code className="text-accent">{GALLERY_BUCKET}</code>),
-                                or paste any public URL — local paths like <code>C:\…</code> will not work.
-                            </p>
-                            {formData.image_url && (
-                                <div className="mt-2 h-40 w-full rounded-xl overflow-hidden border border-white/10 bg-navy flex items-center justify-center">
-                                    <img
-                                        src={formData.image_url}
-                                        alt="preview"
-                                        className="h-full w-full object-contain"
-                                        onError={(e) => {
-                                            (e.currentTarget as HTMLImageElement).style.display = "none";
-                                        }}
-                                    />
-                                </div>
-                            )}
-                        </div>
+                        <ImageUploadField
+                            value={formData.image_url}
+                            onChange={(url) => setFormData({ ...formData, image_url: url })}
+                            folder={formData.type}
+                            label="Image"
+                            required
+                            previewHeight="h-40"
+                        />
 
                         {/* Placement-only fields */}
                         {isPlacement && (

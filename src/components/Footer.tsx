@@ -43,7 +43,7 @@ const Footer = () => {
 
           {/* Column 2: Office Information */}
           <div className="col-span-1">
-            <div className="bg-white/[0.03] backdrop-blur-md rounded-3xl p-8 border border-white/10 shadow-2xl relative overflow-hidden group">
+            <div className="bg-white/[0.03] backdrop-blur-md rounded-3xl p-5 sm:p-8 border border-white/10 shadow-2xl relative overflow-hidden group">
               <div className="absolute inset-0 bg-gradient-to-br from-[#D4AF37]/5 to-transparent pointer-events-none" />
 
               <h3 className="text-white text-xl font-bold mb-4 relative z-10">Office Information</h3>
@@ -76,7 +76,7 @@ const Footer = () => {
                   </div>
                   <div>
                     <p className="text-white/40 text-xs font-bold uppercase tracking-wider mb-1">Work with us</p>
-                    <p className="text-white font-bold text-sm truncate">ind.fortuneinnovatives@gmail.com</p>
+                    <p className="text-white font-bold text-sm break-all sm:break-normal">ind.fortuneinnovatives@gmail.com</p>
                   </div>
                 </div>
               </div>

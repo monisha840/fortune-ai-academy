@@ -20,6 +20,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Edit2, Trash2, Save, Loader2, Building2, Globe, Image as ImageIcon } from "lucide-react";
 import DeleteConfirmDialog from "./DeleteConfirmDialog";
+import ImageUploadField from "./ImageUploadField";
 import { isValidUrl, isValidImageUrl } from "@/lib/validation";
 
 interface HiringPartner {
@@ -245,18 +246,15 @@ const AdminHiringPartners = () => {
                                 />
                             </div>
 
-                            <div className="space-y-2">
-                                <label className="text-sm font-semibold text-white/60 flex items-center gap-2">
-                                    <ImageIcon size={14} /> Logo URL
-                                </label>
-                                <Input
-                                    value={formData.logo_url}
-                                    onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
-                                    placeholder="https://example.com/logo.png"
-                                    className="bg-white/5 border-white/10 text-white"
-                                />
-                                <p className="text-[10px] text-white/30">Provide a direct URL to a transparent PNG/SVG logo</p>
-                            </div>
+                            <ImageUploadField
+                                value={formData.logo_url || ""}
+                                onChange={(url) => setFormData({ ...formData, logo_url: url })}
+                                folder="partners"
+                                label="Company Logo"
+                                placeholder="Upload from device, or paste URL"
+                                hint="Transparent PNG or SVG logos work best."
+                                previewHeight="h-24"
+                            />
 
                             <div className="space-y-2">
                                 <label className="text-sm font-semibold text-white/60 flex items-center gap-2">

@@ -20,6 +20,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Edit2, Trash2, Save, Loader2, MapPin, Building2, User } from "lucide-react";
 import DeleteConfirmDialog from "./DeleteConfirmDialog";
+import ImageUploadField from "./ImageUploadField";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface Testimonial {
@@ -253,25 +254,23 @@ const AdminTestimonials = () => {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <label className="text-sm font-semibold text-white/60">Image Path / URL</label>
-                                <Input
-                                    value={formData.image_url}
-                                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                                    placeholder="e.g. /students/student7.png"
-                                    className="bg-white/5 border-white/10 text-white"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-semibold text-white/60">Display Order</label>
-                                <Input
-                                    type="number"
-                                    value={formData.display_order}
-                                    onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) })}
-                                    className="bg-white/5 border-white/10 text-white"
-                                />
-                            </div>
+                        <ImageUploadField
+                            value={formData.image_url || ""}
+                            onChange={(url) => setFormData({ ...formData, image_url: url })}
+                            folder="testimonials"
+                            label="Student Photo"
+                            placeholder="Upload from device, or paste URL"
+                            previewHeight="h-32"
+                        />
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-semibold text-white/60">Display Order</label>
+                            <Input
+                                type="number"
+                                value={formData.display_order}
+                                onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) })}
+                                className="bg-white/5 border-white/10 text-white"
+                            />
                         </div>
 
                         <DialogFooter className="pt-6">
