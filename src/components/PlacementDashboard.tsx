@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
 
 const metrics = [
-  { label: "Average Salary", value: "₹8.5 LPA" },
+  { label: "Average Salary", value: "₹5 LPA" },
   { label: "Highest Salary", value: "₹18 LPA" },
-  { label: "Placed This Year", value: "1200+" },
+  { label: "Placed This Year", value: "700+" },
+  { label: "Placed Internships", value: "3000+" },
 ];
 
 const partnersRow1 = [
@@ -34,7 +35,7 @@ const PlacementDashboard = ({ statsOnly = false }: { statsOnly?: boolean }) => {
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-8 mb-10 md:mb-20">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-8 mb-10 md:mb-20">
           {metrics.map((m, i) => (
             <motion.div
               key={m.label}

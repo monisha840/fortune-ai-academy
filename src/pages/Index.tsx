@@ -6,10 +6,12 @@ import TestimonialSection from "@/components/TestimonialSection";
 import FloatingReviewWall from "@/components/FloatingReviewWall";
 import FinalCTA from "@/components/FinalCTA";
 import Footer from "@/components/Footer";
+import Seo from "@/components/Seo";
 
 const Index = () => {
   return (
     <div className="min-h-screen">
+      <Seo path="/" />
       <Navbar />
       <HeroSection />
       <TestimonialSection />

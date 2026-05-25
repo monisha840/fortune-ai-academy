@@ -1,10 +1,25 @@
+import { useEffect, useState } from "react";
 import { Phone, Mail, Facebook, Twitter, Instagram, Youtube, Linkedin, ArrowRight } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 const Footer = () => {
-  const courses = [
-    ["UI UX Design", "Full Stack", "Video Editing", "Graphic Designing", "Textile Design"],
-    ["Garment Design", "Packaging Design", "Fashion CADD", "Tally Prime"]
-  ];
+  const [courseTitles, setCourseTitles] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      const { data, error } = await supabase
+        .from("courses")
+        .select("title")
+        .order("display_order", { ascending: true });
+      if (data && !error) {
+        setCourseTitles(data.map((c) => c.title));
+      }
+    };
+    fetchCourses();
+  }, []);
+
+  const splitIndex = Math.ceil(courseTitles.length / 2);
+  const courses = [courseTitles.slice(0, splitIndex), courseTitles.slice(splitIndex)];
 
   const socialLinks = [
     { icon: Facebook, href: "https://www.facebook.com/people/Professional-graphic-design-institute/100063905569020/", label: "Facebook" },

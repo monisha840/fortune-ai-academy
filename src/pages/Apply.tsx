@@ -4,6 +4,7 @@ import { Send, CheckCircle2, ChevronDown, Sparkles, AlertCircle } from "lucide-r
 import { supabase, crmSupabase } from "@/lib/supabase";
 import { isValidPhone, isValidEmail } from "@/lib/validation";
 import { Link } from "react-router-dom";
+import Seo from "@/components/Seo";
 
 const initialCourses = [
     "UI/UX Design",
@@ -16,7 +17,7 @@ const initialCourses = [
     "Tally Prime",
 ];
 
-const branches = ["Erode", "Coimbatore", "Salem", "Tiruppur"];
+const DEFAULT_BRANCH = "Tiruppur";
 
 const Apply = () => {
     const [courses, setCourses] = useState<string[]>(initialCourses);
@@ -29,7 +30,7 @@ const Apply = () => {
         phone: "",
         email: "",
         course: "",
-        branch: "",
+        branch: DEFAULT_BRANCH,
     });
 
     const [focused, setFocused] = useState<string | null>(null);
@@ -60,7 +61,7 @@ const Apply = () => {
         setLoading(true);
         setError(null);
 
-        if (!form.name || !form.phone || !form.email || !form.course || !form.branch) {
+        if (!form.name || !form.phone || !form.email || !form.course) {
             setError("Please fill in all fields before submitting.");
             setLoading(false);
             return;
@@ -103,9 +104,6 @@ const Apply = () => {
             // CRM sync (non-blocking)
             if (crmSupabase) {
                 const branchIdMap: Record<string, string> = {
-                    "Erode": "ae1ebf77-14a0-4a76-a123-11b44b4517d3",
-                    "Coimbatore": "f0feca6f-a037-43e2-9407-8175a234fc46",
-                    "Salem": "1e736840-e93c-4259-8fd7-c24c28b14413",
                     "Tiruppur": "738587cc-6f2c-4f03-a386-4c3a376f4cc0"
                 };
 
@@ -149,6 +147,7 @@ const Apply = () => {
     if (submitted) {
         return (
             <div className="min-h-screen bg-navy flex items-center justify-center p-6">
+                <Seo path="/apply" />
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -170,6 +169,7 @@ const Apply = () => {
 
     return (
         <div className="min-h-screen flex flex-col lg:flex-row bg-navy overflow-hidden">
+            <Seo path="/apply" />
 
             {/* Left Side: Visual Experience */}
             <div className="lg:w-1/2 relative min-h-[40vh] lg:min-h-screen flex flex-col justify-center p-8 md:p-16 lg:p-24 overflow-hidden">
@@ -318,28 +318,13 @@ const Apply = () => {
                             </div>
                         </div>
 
-                        {/* Branch Select */}
-                        <div className="relative mb-6 group">
+                        {/* Branch - fixed to Tiruppur */}
+                        <div className="relative mb-6">
                             <label className="absolute -top-5 left-0 text-accent text-xs font-bold uppercase tracking-widest pointer-events-none">
-                                Preferred Branch
+                                Branch
                             </label>
-                            <div className="relative">
-                                <select
-                                    name="branch"
-                                    value={form.branch}
-                                    onChange={handleChange}
-                                    onFocus={() => setFocused("branch")}
-                                    onBlur={() => setFocused(null)}
-                                    required
-                                    className="w-full bg-transparent border-b border-white/20 py-3 text-white focus:outline-none appearance-none cursor-pointer hover:border-white/40 transition-colors"
-                                >
-                                    <option value="" className="bg-[#0B1C2D] text-white/50">Select Branch</option>
-                                    {branches.map((opt) => (
-                                        <option key={opt} value={opt} className="bg-[#0B1C2D] text-white">{opt}</option>
-                                    ))}
-                                </select>
-                                <ChevronDown size={16} className="absolute right-0 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none" />
-                                <div className={`absolute bottom-0 left-0 h-[2px] bg-accent transition-all duration-300 ${focused === "branch" ? "w-full" : "w-0"}`} />
+                            <div className="w-full border-b border-white/20 py-3 text-white">
+                                Tiruppur
                             </div>
                         </div>
 

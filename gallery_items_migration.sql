@@ -15,17 +15,24 @@ create extension if not exists "pgcrypto";
 create table if not exists public.gallery_items (
     id uuid primary key default gen_random_uuid(),
 
-    -- 'arena' = Empowerment Arena moments, 'placement' = placed students
-    type text not null check (type in ('arena', 'placement')),
+    -- 'arena' = Empowerment Arena moments, 'placement' = placed students, 'portfolio' = student work
+    type text not null check (type in ('arena', 'placement', 'portfolio')),
 
     -- Image source (Supabase Storage public URL or public/ asset path)
     image_url text not null,
 
-    -- Placement-specific fields (nullable for arena)
+    -- Media type — 'image' or 'video'. Defaults to 'image' for back-compat.
+    media_type text default 'image' check (media_type in ('image', 'video')),
+
+    -- Placement-specific fields (nullable for other types)
     position text,              -- Role the student was placed as (e.g. "UI/UX Designer")
     company  text,              -- Hiring partner / company name
     location text,              -- Work city
     salary   text,              -- Optional salary highlight
+
+    -- Portfolio-specific fields (nullable for other types)
+    student_name text,          -- Name of the student whose work is shown
+    course_name  text,          -- Course they studied
 
     -- Optional metadata
     title       text,           -- Caption / headline (any type)
@@ -40,9 +47,32 @@ create table if not exists public.gallery_items (
     updated_at timestamptz default now()
 );
 
--- Safe to run against an older install that doesn't yet have `position`
+-- Safe to run against an older install that doesn't yet have new columns
 alter table public.gallery_items
     add column if not exists position text;
+
+alter table public.gallery_items
+    add column if not exists media_type text default 'image';
+
+alter table public.gallery_items
+    add column if not exists student_name text;
+
+alter table public.gallery_items
+    add column if not exists course_name text;
+
+-- Re-apply CHECK constraints so older installs accept the new values.
+-- PostgreSQL auto-names inline CHECKs as `<table>_<column>_check`.
+alter table public.gallery_items
+    drop constraint if exists gallery_items_type_check;
+alter table public.gallery_items
+    add constraint gallery_items_type_check
+    check (type in ('arena', 'placement', 'portfolio'));
+
+alter table public.gallery_items
+    drop constraint if exists gallery_items_media_type_check;
+alter table public.gallery_items
+    add constraint gallery_items_media_type_check
+    check (media_type in ('image', 'video'));
 
 -- Keep updated_at in sync automatically
 create or replace function public.set_gallery_items_updated_at()

@@ -4,10 +4,9 @@ import { Link } from "react-router-dom";
 import { ArrowRight, ChevronDown } from "lucide-react";
 
 const stats = [
-  { label: "Students Trained", target: 10000, suffix: "+" },
+  { label: "Students Trained", target: 5000, suffix: "+" },
   { label: "Placement Rate", target: 98.4, suffix: "%", decimal: true },
   { label: "Hiring Partners", target: 25, suffix: "+" },
-  { label: "Branches", target: 4, suffix: "" },
 ];
 
 function AnimatedCounter({ target, suffix, decimal }: { target: number; suffix: string; decimal?: boolean }) {
@@ -154,11 +153,11 @@ const HeroSection = () => {
         >
           <span>98.4% Placement</span>
           <span className="hidden sm:inline text-accent/40">|</span>
-          <span>10,000+ Students</span>
+          <span>5,000+ Students</span>
           <span className="hidden sm:inline text-accent/40">|</span>
           <span>25+ Hiring Partners</span>
           <span className="hidden sm:inline text-accent/40">|</span>
-          <span>4 Branches</span>
+          <span className="text-accent font-bold">Tiruppur Branch</span>
         </motion.div>
 
         {/* Stats */}
@@ -166,7 +165,7 @@ const HeroSection = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 max-w-3xl mx-auto"
+          className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-10 max-w-3xl mx-auto"
         >
           {stats.map((s, i) => (
             <motion.div

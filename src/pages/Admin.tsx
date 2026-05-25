@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Routes, Route, Link, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import {
@@ -114,6 +115,10 @@ const Admin = () => {
 
     return (
         <div className="min-h-screen bg-navy text-white flex flex-col md:flex-row">
+            <Helmet>
+                <title>Admin · Fortune Innovatives</title>
+                <meta name="robots" content="noindex, nofollow" />
+            </Helmet>
             <div className="md:hidden sticky top-0 z-30 flex items-center justify-between p-4 border-b border-white/10 bg-navy/80 backdrop-blur-lg">
                 <div className="flex items-center gap-2">
                     <img src={logo} alt="Fortune Innovatives" className="h-6 w-auto object-contain" />

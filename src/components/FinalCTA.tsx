@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Sparkles, User, Send, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { supabase, crmSupabase } from "@/lib/supabase";
@@ -8,13 +8,29 @@ const FinalCTA = () => {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [courseOptions, setCourseOptions] = useState<string[]>([]);
 
   const [form, setForm] = useState({
     name: "",
     phone: "",
-    course: "UI/UX Design",
-    branch: "Erode",
+    course: "",
+    branch: "Tiruppur",
   });
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      const { data, error } = await supabase
+        .from("courses")
+        .select("title")
+        .order("display_order", { ascending: true });
+      if (data && !error && data.length > 0) {
+        const titles = data.map((c) => c.title);
+        setCourseOptions(titles);
+        setForm((prev) => (prev.course ? prev : { ...prev, course: titles[0] }));
+      }
+    };
+    fetchCourses();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -26,8 +42,8 @@ const FinalCTA = () => {
     setLoading(true);
     setError(null);
 
-    if (!form.name || !form.phone) {
-      setError("Please fill in your name and phone number.");
+    if (!form.name || !form.phone || !form.course) {
+      setError("Please fill in your name, phone, and course.");
       setLoading(false);
       return;
     }
@@ -179,8 +195,8 @@ const FinalCTA = () => {
                 <User className="text-accent" size={32} />
               </div>
               <div>
-                <div className="text-navy font-bold text-lg">Dr. Aryan Sharma</div>
-                <div className="text-navy/60 text-sm font-medium">Chief AI Mentor & Strategist</div>
+                <div className="text-navy font-bold text-lg">K. Vasudeven</div>
+                <div className="text-navy/60 text-sm font-medium">B.Sc. in Computer Science</div>
               </div>
             </motion.div>
           </div>
@@ -229,39 +245,22 @@ const FinalCTA = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-white/70 text-xs font-bold uppercase tracking-widest ml-1">Course</label>
-                  <select
-                    name="course"
-                    value={form.course}
-                    onChange={handleChange}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white focus:outline-none focus:border-accent/50 focus:bg-white/10 transition-all appearance-none cursor-pointer"
-                  >
-                    <option className="bg-navy" value="UI/UX Design">UI/UX Design</option>
-                    <option className="bg-navy" value="Full Stack Development">Full Stack Development</option>
-                    <option className="bg-navy" value="Graphic Designing">Graphic Designing</option>
-                    <option className="bg-navy" value="Video Editing">Video Editing</option>
-                    <option className="bg-navy" value="Textile & Garment Design">Textile & Garment Design</option>
-                    <option className="bg-navy" value="Packaging Design">Packaging Design</option>
-                    <option className="bg-navy" value="Fashion CADD">Fashion CADD</option>
-                    <option className="bg-navy" value="Tally Prime">Tally Prime</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-white/70 text-xs font-bold uppercase tracking-widest ml-1">Branch</label>
-                  <select
-                    name="branch"
-                    value={form.branch}
-                    onChange={handleChange}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white focus:outline-none focus:border-accent/50 focus:bg-white/10 transition-all appearance-none cursor-pointer"
-                  >
-                    <option className="bg-navy" value="Erode">Erode</option>
-                    <option className="bg-navy" value="Coimbatore">Coimbatore</option>
-                    <option className="bg-navy" value="Salem">Salem</option>
-                    <option className="bg-navy" value="Tiruppur">Tiruppur</option>
-                  </select>
-                </div>
+              <div className="space-y-2">
+                <label className="text-white/70 text-xs font-bold uppercase tracking-widest ml-1">Course</label>
+                <select
+                  name="course"
+                  value={form.course}
+                  onChange={handleChange}
+                  required
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white focus:outline-none focus:border-accent/50 focus:bg-white/10 transition-all appearance-none cursor-pointer"
+                >
+                  {courseOptions.length === 0 && (
+                    <option className="bg-navy" value="">Loading courses…</option>
+                  )}
+                  {courseOptions.map((opt) => (
+                    <option key={opt} className="bg-navy" value={opt}>{opt}</option>
+                  ))}
+                </select>
               </div>
 
               {error && (

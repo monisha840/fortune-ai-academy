@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback, useMemo, useRef, TouchEvent } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
-import { X, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Loader2, Play } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import Seo from "@/components/Seo";
 import { supabase } from "@/lib/supabase";
 
-type GalleryType = "arena" | "placement";
+type GalleryType = "arena" | "placement" | "portfolio";
+type MediaType = "image" | "video";
 
 /**
  * Row shape for `public.gallery_items` (see gallery_items_migration.sql).
@@ -14,10 +16,13 @@ export interface GalleryItem {
     id: string;
     type: GalleryType;
     image_url: string;
+    media_type: MediaType;       // 'image' or 'video' — defaults to 'image' for legacy rows
     position: string | null;     // role the student was placed as
     company: string | null;      // partner / hiring company
     location: string | null;     // work city
     salary: string | null;       // optional salary highlight
+    student_name: string | null; // portfolio — name of student whose work is shown
+    course_name: string | null;  // portfolio — course they studied
     title: string | null;        // generic caption / headline
     description: string | null;
     display_order: number;
@@ -39,10 +44,13 @@ const makeFallbackItem = (
     id,
     type,
     image_url,
+    media_type: "image",
     position: null,
     company: null,
     location: null,
     salary: null,
+    student_name: null,
+    course_name: null,
     title: null,
     description: null,
     display_order,
@@ -133,10 +141,18 @@ const ImageModal = ({ images, index, onClose, onNav }: ModalProps) => {
     };
 
     const current = images[index];
-    const altText = current.position || current.title || current.company || "Gallery image";
-    const hasDetails =
+    const altText =
+        current.position ||
+        current.student_name ||
+        current.title ||
+        current.company ||
+        "Gallery image";
+    const hasPlacementDetails =
         current.type === "placement" &&
         (current.position || current.company || current.location || current.salary);
+    const hasPortfolioDetails =
+        current.type === "portfolio" &&
+        (current.student_name || current.course_name);
 
     return (
         <motion.div
@@ -177,20 +193,35 @@ const ImageModal = ({ images, index, onClose, onNav }: ModalProps) => {
                 onClick={(e) => e.stopPropagation()}
             >
                 <AnimatePresence mode="wait">
-                    <motion.img
-                        key={current.id}
-                        src={current.image_url}
-                        alt={altText}
-                        initial={{ opacity: 0, scale: 0.96 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 1.02 }}
-                        transition={{ duration: 0.3, ease: "easeOut" }}
-                        className="max-h-[75vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl"
-                        loading="eager"
-                    />
+                    {current.media_type === "video" ? (
+                        <motion.video
+                            key={current.id}
+                            src={current.image_url}
+                            controls
+                            autoPlay
+                            playsInline
+                            initial={{ opacity: 0, scale: 0.96 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 1.02 }}
+                            transition={{ duration: 0.3, ease: "easeOut" }}
+                            className="max-h-[75vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl bg-black"
+                        />
+                    ) : (
+                        <motion.img
+                            key={current.id}
+                            src={current.image_url}
+                            alt={altText}
+                            initial={{ opacity: 0, scale: 0.96 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 1.02 }}
+                            transition={{ duration: 0.3, ease: "easeOut" }}
+                            className="max-h-[75vh] w-auto max-w-full object-contain rounded-2xl shadow-2xl"
+                            loading="eager"
+                        />
+                    )}
                 </AnimatePresence>
 
-                {hasDetails && (
+                {hasPlacementDetails && (
                     <motion.div
                         initial={{ opacity: 0, y: 12 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -215,6 +246,26 @@ const ImageModal = ({ images, index, onClose, onNav }: ModalProps) => {
                         {current.salary && (
                             <p className="mt-3 inline-block text-accent font-bold text-base md:text-lg px-3 py-1 rounded-full bg-accent/10 border border-accent/30">
                                 {current.salary}
+                            </p>
+                        )}
+                    </motion.div>
+                )}
+
+                {hasPortfolioDetails && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.15 }}
+                        className="mt-5 text-center px-4"
+                    >
+                        {current.student_name && (
+                            <h3 className="text-white font-display text-xl md:text-2xl font-bold tracking-tight">
+                                {current.student_name}
+                            </h3>
+                        )}
+                        {current.course_name && (
+                            <p className="text-accent/90 text-sm md:text-base mt-1.5 font-medium">
+                                {current.course_name}
                             </p>
                         )}
                     </motion.div>
@@ -323,6 +374,80 @@ const PlacementCard = ({ item, idx, onOpen }: { item: GalleryItem; idx: number; 
     );
 };
 
+const PortfolioCard = ({ item, idx, onOpen }: { item: GalleryItem; idx: number; onOpen: () => void }) => {
+    const hasOverlay = Boolean(item.student_name || item.course_name);
+    const isVideo = item.media_type === "video";
+
+    return (
+        <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-50px" }}
+            custom={idx}
+            className="break-inside-avoid mb-4 md:mb-6"
+        >
+            <button
+                onClick={onOpen}
+                className="group relative block w-full rounded-2xl overflow-hidden bg-white/5 border border-white/10 transition-all duration-500 md:hover:border-accent/50 md:hover:shadow-[0_12px_40px_rgba(212,175,55,0.25)] will-change-transform"
+            >
+                {isVideo ? (
+                    <video
+                        src={item.image_url}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        preload="metadata"
+                        className="block w-full h-auto bg-black transition-transform duration-700 md:group-hover:scale-[1.03]"
+                    />
+                ) : (
+                    <img
+                        src={item.image_url}
+                        alt={item.student_name || item.title || "Student portfolio"}
+                        loading="lazy"
+                        decoding="async"
+                        className="block w-full h-auto transition-transform duration-700 md:group-hover:scale-[1.03]"
+                    />
+                )}
+
+                {isVideo && (
+                    <div className="absolute top-3 right-3 flex items-center gap-1 rounded-full bg-black/60 backdrop-blur-sm px-2.5 py-1 text-white text-[10px] font-semibold uppercase tracking-wider pointer-events-none">
+                        <Play size={10} className="fill-white" />
+                        Video
+                    </div>
+                )}
+
+                {hasOverlay && (
+                    <>
+                        {/* Dark gradient + blur backdrop (fade-in) */}
+                        <div className="hidden md:block absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out pointer-events-none bg-gradient-to-t from-[#0B1C2D]/95 via-[#0B1C2D]/55 to-transparent backdrop-blur-[2px]" />
+
+                        {/* Text block — slides up on hover */}
+                        <div className="hidden md:flex absolute inset-0 items-end justify-center p-6 pointer-events-none">
+                            <div className="w-full text-center opacity-0 translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-out">
+                                {item.student_name && (
+                                    <p className="text-white font-display font-bold text-lg leading-tight tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">
+                                        {item.student_name}
+                                    </p>
+                                )}
+                                {item.course_name && (
+                                    <p className="mt-1.5 text-accent/90 text-sm font-medium">
+                                        {item.course_name}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Subtle gold glow border on hover */}
+                        <div className="hidden md:block absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-accent/70 group-hover:shadow-[inset_0_0_20px_rgba(212,175,55,0.25),0_0_20px_rgba(212,175,55,0.35)] transition-all duration-300 pointer-events-none" />
+                    </>
+                )}
+            </button>
+        </motion.div>
+    );
+};
+
 /* -------------------------------------------------------------------------- */
 /*                            Skeleton placeholders                           */
 /* -------------------------------------------------------------------------- */
@@ -407,8 +532,13 @@ const Gallery = () => {
         () => items.filter((i) => i.type === "placement"),
         [items]
     );
+    const portfolioItems = useMemo(
+        () => items.filter((i) => i.type === "portfolio"),
+        [items]
+    );
 
-    const activeItems = tab === "arena" ? arenaItems : placementItems;
+    const activeItems =
+        tab === "arena" ? arenaItems : tab === "placement" ? placementItems : portfolioItems;
 
     const handleNav = useCallback(
         (dir: 1 | -1) => {
@@ -424,6 +554,7 @@ const Gallery = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-[#0A1829] via-[#0B1C2D] to-[#0A1829] text-white">
+            <Seo path="/gallery" />
             <Navbar />
 
             {/* Ambient background blobs */}
@@ -456,6 +587,7 @@ const Gallery = () => {
                             {([
                                 { key: "arena", label: "Arena" },
                                 { key: "placement", label: "Placements" },
+                                { key: "portfolio", label: "Portfolio" },
                             ] as const).map((t) => {
                                 const active = tab === t.key;
                                 return (
@@ -489,7 +621,7 @@ const Gallery = () => {
                 {/* CONTENT */}
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-8 md:py-14">
                     <AnimatePresence mode="wait">
-                            {tab === "arena" ? (
+                            {tab === "arena" && (
                                 <motion.div
                                     key="arena"
                                     initial={{ opacity: 0, y: 12 }}
@@ -523,7 +655,9 @@ const Gallery = () => {
                                         />
                                     )}
                                 </motion.div>
-                            ) : (
+                            )}
+
+                            {tab === "placement" && (
                                 <motion.div
                                     key="placement"
                                     initial={{ opacity: 0, y: 12 }}
@@ -546,6 +680,41 @@ const Gallery = () => {
                                                 />
                                             ))}
                                         </div>
+                                    )}
+                                </motion.div>
+                            )}
+
+                            {tab === "portfolio" && (
+                                <motion.div
+                                    key="portfolio"
+                                    initial={{ opacity: 0, y: 12 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -8 }}
+                                    transition={{ duration: 0.35 }}
+                                    className="relative"
+                                >
+                                    {loading ? (
+                                        <PlacementSkeleton />
+                                    ) : portfolioItems.length === 0 ? (
+                                        <EmptyState label="No portfolio pieces yet." />
+                                    ) : (
+                                        <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 md:gap-6">
+                                            {portfolioItems.map((item, idx) => (
+                                                <PortfolioCard
+                                                    key={item.id}
+                                                    item={item}
+                                                    idx={idx}
+                                                    onOpen={() => setModalIdx(idx)}
+                                                />
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {!loading && portfolioItems.length > 0 && (
+                                        <div
+                                            aria-hidden="true"
+                                            className="pointer-events-none absolute inset-x-0 bottom-0 h-[70px] md:h-[110px] bg-gradient-to-t from-[#0A1829] via-[#0A1829]/70 to-transparent"
+                                        />
                                     )}
                                 </motion.div>
                             )}

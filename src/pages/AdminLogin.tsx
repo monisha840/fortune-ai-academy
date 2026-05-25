@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { ShieldCheck, Mail, Lock, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 const AdminLogin = () => {
     const [email, setEmail] = useState("");
@@ -51,6 +52,10 @@ const AdminLogin = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-navy p-4 overflow-hidden relative">
+            <Helmet>
+                <title>Admin Login · Fortune Innovatives</title>
+                <meta name="robots" content="noindex, nofollow" />
+            </Helmet>
             <div className="absolute top-1/4 -left-1/4 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
             <div className="absolute bottom-1/4 -right-1/4 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
 

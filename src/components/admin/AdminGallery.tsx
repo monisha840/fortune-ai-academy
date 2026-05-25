@@ -37,18 +37,21 @@ import {
     Star,
 } from "lucide-react";
 import DeleteConfirmDialog from "./DeleteConfirmDialog";
-import ImageUploadField from "./ImageUploadField";
+import MediaUploadField, { MediaType } from "./MediaUploadField";
 
-type GalleryType = "arena" | "placement";
+type GalleryType = "arena" | "placement" | "portfolio";
 
 interface GalleryItem {
     id: string;
     type: GalleryType;
     image_url: string;
+    media_type: MediaType;
     position: string | null;
     company: string | null;
     location: string | null;
     salary: string | null;
+    student_name: string | null;
+    course_name: string | null;
     title: string | null;
     description: string | null;
     display_order: number;
@@ -62,10 +65,13 @@ type FormState = Omit<GalleryItem, "id" | "created_at" | "updated_at">;
 const emptyForm = (order: number): FormState => ({
     type: "arena",
     image_url: "",
+    media_type: "image",
     position: "",
     company: "",
     location: "",
     salary: "",
+    student_name: "",
+    course_name: "",
     title: "",
     description: "",
     display_order: order,
@@ -85,12 +91,24 @@ const AdminGallery = () => {
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<string | null>(null);
     const [fetchError, setFetchError] = useState<string | null>(null);
+    const [courseOptions, setCourseOptions] = useState<string[]>([]);
 
     const { toast } = useToast();
 
     useEffect(() => {
         fetchItems();
+        fetchCourses();
     }, []);
+
+    const fetchCourses = async () => {
+        const { data, error } = await supabase
+            .from("courses")
+            .select("title")
+            .order("display_order", { ascending: true });
+        if (data && !error) {
+            setCourseOptions(data.map((c) => c.title));
+        }
+    };
 
     const fetchItems = async () => {
         setLoading(true);
@@ -130,10 +148,13 @@ const AdminGallery = () => {
             setFormData({
                 type: item.type,
                 image_url: item.image_url,
+                media_type: item.media_type ?? "image",
                 position: item.position ?? "",
                 company: item.company ?? "",
                 location: item.location ?? "",
                 salary: item.salary ?? "",
+                student_name: item.student_name ?? "",
+                course_name: item.course_name ?? "",
                 title: item.title ?? "",
                 description: item.description ?? "",
                 display_order: item.display_order,
@@ -154,10 +175,13 @@ const AdminGallery = () => {
         const payload = {
             type: formData.type,
             image_url: formData.image_url.trim(),
+            media_type: formData.media_type,
             position: formData.position?.trim() || null,
             company: formData.company?.trim() || null,
             location: formData.location?.trim() || null,
             salary: formData.salary?.trim() || null,
+            student_name: formData.student_name?.trim() || null,
+            course_name: formData.course_name?.trim() || null,
             title: formData.title?.trim() || null,
             description: formData.description?.trim() || null,
             display_order: Number(formData.display_order) || 0,
@@ -220,6 +244,7 @@ const AdminGallery = () => {
     };
 
     const isPlacement = formData.type === "placement";
+    const isPortfolio = formData.type === "portfolio";
 
     return (
         <div className="space-y-6">
@@ -229,7 +254,7 @@ const AdminGallery = () => {
                         Gallery Management
                     </h1>
                     <p className="text-white/40 text-sm mt-1">
-                        Manage Arena &amp; Placement images shown on the public gallery.
+                        Manage Arena, Placement &amp; Portfolio media shown on the public gallery.
                     </p>
                 </div>
                 <Button
@@ -257,6 +282,7 @@ const AdminGallery = () => {
                         { key: "all", label: "All", count: items.length },
                         { key: "arena", label: "Arena", count: items.filter((i) => i.type === "arena").length },
                         { key: "placement", label: "Placements", count: items.filter((i) => i.type === "placement").length },
+                        { key: "portfolio", label: "Portfolio", count: items.filter((i) => i.type === "portfolio").length },
                     ] as const
                 ).map((f) => {
                     const active = filter === f.key;
@@ -291,10 +317,10 @@ const AdminGallery = () => {
                         <TableHeader className="bg-white/5">
                             <TableRow className="border-white/10 hover:bg-transparent">
                                 <TableHead className="text-white/60 w-16">Order</TableHead>
-                                <TableHead className="text-white/60">Image</TableHead>
+                                <TableHead className="text-white/60">Media</TableHead>
                                 <TableHead className="text-white/60">Type</TableHead>
-                                <TableHead className="text-white/60">Position</TableHead>
-                                <TableHead className="text-white/60">Company</TableHead>
+                                <TableHead className="text-white/60">Position / Student</TableHead>
+                                <TableHead className="text-white/60">Company / Course</TableHead>
                                 <TableHead className="text-white/60">Location</TableHead>
                                 <TableHead className="text-white/60">Salary</TableHead>
                                 <TableHead className="text-white/60 text-center">Featured</TableHead>
@@ -311,13 +337,29 @@ const AdminGallery = () => {
                                         {item.display_order}
                                     </TableCell>
                                     <TableCell>
-                                        <div className="h-12 w-12 rounded-lg overflow-hidden border border-white/10 bg-navy flex items-center justify-center">
+                                        <div className="h-12 w-12 rounded-lg overflow-hidden border border-white/10 bg-navy flex items-center justify-center relative">
                                             {item.image_url ? (
-                                                <img
-                                                    src={item.image_url}
-                                                    alt={item.title || "gallery"}
-                                                    className="h-full w-full object-cover"
-                                                />
+                                                item.media_type === "video" ? (
+                                                    <>
+                                                        <video
+                                                            src={item.image_url}
+                                                            muted
+                                                            playsInline
+                                                            preload="metadata"
+                                                            className="h-full w-full object-cover"
+                                                        />
+                                                        <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                                                            <ImageIcon size={14} className="text-white/0" />
+                                                            <span className="absolute text-[8px] font-bold text-white tracking-widest">VIDEO</span>
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <img
+                                                        src={item.image_url}
+                                                        alt={item.title || "gallery"}
+                                                        className="h-full w-full object-cover"
+                                                    />
+                                                )
                                             ) : (
                                                 <ImageIcon size={18} className="text-white/30" />
                                             )}
@@ -328,23 +370,29 @@ const AdminGallery = () => {
                                             className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-full ${
                                                 item.type === "arena"
                                                     ? "bg-amber-400/10 text-amber-300 border border-amber-300/20"
-                                                    : "bg-blue-400/10 text-blue-300 border border-blue-300/20"
+                                                    : item.type === "placement"
+                                                    ? "bg-blue-400/10 text-blue-300 border border-blue-300/20"
+                                                    : "bg-emerald-400/10 text-emerald-300 border border-emerald-300/20"
                                             }`}
                                         >
                                             {item.type}
                                         </span>
                                     </TableCell>
                                     <TableCell className="text-white/80 font-medium max-w-[200px] truncate">
-                                        {item.position || <span className="text-white/30">—</span>}
+                                        {item.type === "portfolio"
+                                            ? item.student_name || <span className="text-white/30">—</span>
+                                            : item.position || <span className="text-white/30">—</span>}
                                     </TableCell>
                                     <TableCell className="text-white/70 max-w-[180px] truncate">
-                                        {item.company || <span className="text-white/30">—</span>}
+                                        {item.type === "portfolio"
+                                            ? item.course_name || <span className="text-white/30">—</span>
+                                            : item.company || <span className="text-white/30">—</span>}
                                     </TableCell>
                                     <TableCell className="text-white/60 max-w-[140px] truncate">
-                                        {item.location || <span className="text-white/30">—</span>}
+                                        {item.type === "portfolio" ? <span className="text-white/30">—</span> : item.location || <span className="text-white/30">—</span>}
                                     </TableCell>
                                     <TableCell className="text-accent font-semibold">
-                                        {item.salary || <span className="text-white/30">—</span>}
+                                        {item.type === "portfolio" ? <span className="text-white/30">—</span> : item.salary || <span className="text-white/30">—</span>}
                                     </TableCell>
                                     <TableCell className="text-center">
                                         {item.is_featured ? (
@@ -404,6 +452,7 @@ const AdminGallery = () => {
                                     <SelectContent className="bg-secondary border-white/10 text-white">
                                         <SelectItem value="arena">Arena</SelectItem>
                                         <SelectItem value="placement">Placement</SelectItem>
+                                        <SelectItem value="portfolio">Portfolio</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -425,14 +474,73 @@ const AdminGallery = () => {
                             </div>
                         </div>
 
-                        <ImageUploadField
+                        <MediaUploadField
                             value={formData.image_url}
-                            onChange={(url) => setFormData({ ...formData, image_url: url })}
+                            mediaType={formData.media_type}
+                            onChange={(url, mediaType) =>
+                                setFormData({ ...formData, image_url: url, media_type: mediaType })
+                            }
                             folder={formData.type}
-                            label="Image"
+                            label={isPortfolio ? "Photo or Video" : "Image"}
                             required
                             previewHeight="h-40"
+                            hint={isPortfolio ? "Accepts images (≤ 5 MB) or videos (≤ 50 MB)." : undefined}
                         />
+
+                        {/* Portfolio-only fields */}
+                        {isPortfolio && (
+                            <>
+                                <div className="space-y-2">
+                                    <label className="text-sm font-semibold text-white/60">
+                                        Student Name <span className="text-destructive">*</span>
+                                    </label>
+                                    <Input
+                                        value={formData.student_name ?? ""}
+                                        onChange={(e) =>
+                                            setFormData({ ...formData, student_name: e.target.value })
+                                        }
+                                        placeholder="e.g. Anjalien V"
+                                        className="bg-white/5 border-white/10 text-white"
+                                        required
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-sm font-semibold text-white/60">
+                                        Course <span className="text-destructive">*</span>
+                                    </label>
+                                    {courseOptions.length > 0 ? (
+                                        <Select
+                                            value={formData.course_name || undefined}
+                                            onValueChange={(v) =>
+                                                setFormData({ ...formData, course_name: v })
+                                            }
+                                        >
+                                            <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                                                <SelectValue placeholder="Select course" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-secondary border-white/10 text-white">
+                                                {courseOptions.map((opt) => (
+                                                    <SelectItem key={opt} value={opt}>
+                                                        {opt}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    ) : (
+                                        <Input
+                                            value={formData.course_name ?? ""}
+                                            onChange={(e) =>
+                                                setFormData({ ...formData, course_name: e.target.value })
+                                            }
+                                            placeholder="e.g. UI/UX Design"
+                                            className="bg-white/5 border-white/10 text-white"
+                                            required
+                                        />
+                                    )}
+                                </div>
+                            </>
+                        )}
 
                         {/* Placement-only fields */}
                         {isPlacement && (
