@@ -601,6 +601,40 @@ const AdminGallery = () => {
                                         className="bg-white/5 border-white/10 text-white"
                                     />
                                 </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-sm font-semibold text-white/60">
+                                        Course (optional — enables course-filter on Placements tab)
+                                    </label>
+                                    {courseOptions.length > 0 ? (
+                                        <Select
+                                            value={formData.course_name || undefined}
+                                            onValueChange={(v) =>
+                                                setFormData({ ...formData, course_name: v })
+                                            }
+                                        >
+                                            <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                                                <SelectValue placeholder="Select course" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-secondary border-white/10 text-white">
+                                                {courseOptions.map((opt) => (
+                                                    <SelectItem key={opt} value={opt}>
+                                                        {opt}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    ) : (
+                                        <Input
+                                            value={formData.course_name ?? ""}
+                                            onChange={(e) =>
+                                                setFormData({ ...formData, course_name: e.target.value })
+                                            }
+                                            placeholder="e.g. UI/UX Design"
+                                            className="bg-white/5 border-white/10 text-white"
+                                        />
+                                    )}
+                                </div>
                             </>
                         )}
 

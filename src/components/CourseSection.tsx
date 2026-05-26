@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { courses as initialCourses, categories } from "@/lib/constants";
+import { courses as initialCourses } from "@/lib/constants";
 import { supabase } from "@/lib/supabase";
 
 const CourseSection = ({ preview = false }: { preview?: boolean }) => {
@@ -51,11 +51,6 @@ const CourseSection = ({ preview = false }: { preview?: boolean }) => {
   const displayedCourses = preview ? filtered.slice(0, 3) : filtered;
   const activeCourse = displayedCourses[activeIndex] || displayedCourses[0];
 
-  const handleCategoryChange = (cat: string) => {
-    setActiveCategory(cat);
-    setActiveIndex(0);
-  };
-
   const handleCourseClick = (index: number) => {
     setActiveIndex(index);
     if (window.innerWidth < 768) {
@@ -91,24 +86,6 @@ const CourseSection = ({ preview = false }: { preview?: boolean }) => {
                 transition={{ duration: 0.3 }}
                 className="space-y-6"
               >
-                {/* Horizontal Categories */}
-                {!preview && (
-                  <div className="flex overflow-x-auto pb-4 gap-2 no-scrollbar">
-                    {categories.map((cat) => (
-                      <button
-                        key={cat}
-                        onClick={() => handleCategoryChange(cat)}
-                        className={`whitespace-nowrap px-4 py-2 rounded-full text-xs font-semibold transition-all duration-300 ${activeCategory === cat
-                          ? "bg-accent text-accent-foreground gold-glow-box"
-                          : "border border-border text-muted-foreground"
-                          }`}
-                      >
-                        {cat}
-                      </button>
-                    ))}
-                  </div>
-                )}
-
                 <div className="space-y-4">
                   {displayedCourses.map((course, i) => (
                     <button

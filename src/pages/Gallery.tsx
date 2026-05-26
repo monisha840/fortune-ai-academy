@@ -4,6 +4,7 @@ import { X, ChevronLeft, ChevronRight, Loader2, Play } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Seo from "@/components/Seo";
+import CourseFilter, { ALL_FILTER } from "@/components/CourseFilter";
 import { supabase } from "@/lib/supabase";
 
 type GalleryType = "arena" | "placement" | "portfolio";
@@ -484,6 +485,24 @@ const Gallery = () => {
     const [modalIdx, setModalIdx] = useState<number | null>(null);
     const [items, setItems] = useState<GalleryItem[]>([]);
     const [loading, setLoading] = useState(true);
+    const [courseFilter, setCourseFilter] = useState<string>(ALL_FILTER);
+    const [courseNames, setCourseNames] = useState<string[]>([]);
+
+    // Fetch the canonical course list from the CMS so the filter pills always
+    // match what's shown on the /courses page (single source of truth).
+    useEffect(() => {
+        let cancelled = false;
+        (async () => {
+            const { data, error } = await supabase
+                .from("courses")
+                .select("title")
+                .order("display_order", { ascending: true });
+            if (!cancelled && data && !error) {
+                setCourseNames(data.map((c) => c.title));
+            }
+        })();
+        return () => { cancelled = true; };
+    }, []);
 
     useEffect(() => {
         let cancelled = false;
@@ -528,17 +547,40 @@ const Gallery = () => {
         () => items.filter((i) => i.type === "arena"),
         [items]
     );
-    const placementItems = useMemo(
+    const allPlacementItems = useMemo(
         () => items.filter((i) => i.type === "placement"),
         [items]
     );
-    const portfolioItems = useMemo(
+    const allPortfolioItems = useMemo(
         () => items.filter((i) => i.type === "portfolio"),
         [items]
     );
 
+    // Apply the active course filter to the two tabs that support it.
+    const placementItems = useMemo(
+        () =>
+            courseFilter === ALL_FILTER
+                ? allPlacementItems
+                : allPlacementItems.filter((i) => i.course_name === courseFilter),
+        [allPlacementItems, courseFilter]
+    );
+    const portfolioItems = useMemo(
+        () =>
+            courseFilter === ALL_FILTER
+                ? allPortfolioItems
+                : allPortfolioItems.filter((i) => i.course_name === courseFilter),
+        [allPortfolioItems, courseFilter]
+    );
+
     const activeItems =
         tab === "arena" ? arenaItems : tab === "placement" ? placementItems : portfolioItems;
+
+    // Closing the modal index if the filter change removed the currently-open item.
+    useEffect(() => {
+        if (modalIdx !== null && modalIdx >= activeItems.length) {
+            setModalIdx(null);
+        }
+    }, [activeItems.length, modalIdx]);
 
     const handleNav = useCallback(
         (dir: 1 | -1) => {
@@ -665,12 +707,29 @@ const Gallery = () => {
                                     exit={{ opacity: 0, y: -8 }}
                                     transition={{ duration: 0.35 }}
                                 >
+                                    <CourseFilter
+                                        courses={courseNames}
+                                        selected={courseFilter}
+                                        onChange={setCourseFilter}
+                                    />
                                     {loading ? (
                                         <PlacementSkeleton />
                                     ) : placementItems.length === 0 ? (
-                                        <EmptyState label="No placement stories yet." />
+                                        <EmptyState
+                                            label={
+                                                courseFilter === ALL_FILTER
+                                                    ? "No placement stories yet."
+                                                    : `No placements yet for ${courseFilter}.`
+                                            }
+                                        />
                                     ) : (
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                                        <motion.div
+                                            key={`placement-${courseFilter}`}
+                                            initial={{ opacity: 0, scale: 0.98 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            transition={{ duration: 0.3, ease: "easeOut" }}
+                                            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
+                                        >
                                             {placementItems.map((item, idx) => (
                                                 <PlacementCard
                                                     key={item.id}
@@ -679,7 +738,7 @@ const Gallery = () => {
                                                     onOpen={() => setModalIdx(idx)}
                                                 />
                                             ))}
-                                        </div>
+                                        </motion.div>
                                     )}
                                 </motion.div>
                             )}
@@ -693,12 +752,29 @@ const Gallery = () => {
                                     transition={{ duration: 0.35 }}
                                     className="relative"
                                 >
+                                    <CourseFilter
+                                        courses={courseNames}
+                                        selected={courseFilter}
+                                        onChange={setCourseFilter}
+                                    />
                                     {loading ? (
                                         <PlacementSkeleton />
                                     ) : portfolioItems.length === 0 ? (
-                                        <EmptyState label="No portfolio pieces yet." />
+                                        <EmptyState
+                                            label={
+                                                courseFilter === ALL_FILTER
+                                                    ? "No portfolio pieces yet."
+                                                    : `No portfolio items yet for ${courseFilter}.`
+                                            }
+                                        />
                                     ) : (
-                                        <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 md:gap-6">
+                                        <motion.div
+                                            key={`portfolio-${courseFilter}`}
+                                            initial={{ opacity: 0, scale: 0.98 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            transition={{ duration: 0.3, ease: "easeOut" }}
+                                            className="columns-1 sm:columns-2 lg:columns-3 gap-4 md:gap-6"
+                                        >
                                             {portfolioItems.map((item, idx) => (
                                                 <PortfolioCard
                                                     key={item.id}
@@ -707,7 +783,7 @@ const Gallery = () => {
                                                     onOpen={() => setModalIdx(idx)}
                                                 />
                                             ))}
-                                        </div>
+                                        </motion.div>
                                     )}
 
                                     {!loading && portfolioItems.length > 0 && (
