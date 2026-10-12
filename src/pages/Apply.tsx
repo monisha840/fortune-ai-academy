@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Send, CheckCircle2, ChevronDown, Sparkles, AlertCircle } from "lucide-react";
 import { supabase, crmSupabase } from "@/lib/supabase";
 import { isValidPhone, isValidEmail } from "@/lib/validation";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import Seo from "@/components/Seo";
 
 const initialCourses = [
@@ -34,6 +34,8 @@ const Apply = () => {
     });
 
     const [focused, setFocused] = useState<string | null>(null);
+    const [searchParams] = useSearchParams();
+    const requestedCourse = searchParams.get("course");
 
     useEffect(() => {
         const fetchCourses = async () => {
@@ -50,6 +52,13 @@ const Apply = () => {
 
         fetchCourses();
     }, []);
+
+    // /apply?course=<title> preselects that course, but only if it is a real option.
+    useEffect(() => {
+        if (!requestedCourse) return;
+        const match = courses.find((c) => c.trim().toLowerCase() === requestedCourse.trim().toLowerCase());
+        if (match) setForm((f) => (f.course ? f : { ...f, course: match }));
+    }, [requestedCourse, courses]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });

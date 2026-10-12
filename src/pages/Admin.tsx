@@ -15,6 +15,7 @@ import {
     ChevronRight,
     HelpCircle,
     UserCheck,
+    LayoutTemplate,
     Image as ImageIcon
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -25,6 +26,7 @@ import AdminTestimonials from "@/components/admin/AdminTestimonials";
 import AdminHiringPartners from "@/components/admin/AdminHiringPartners";
 import AdminLeads from "@/components/admin/AdminLeads";
 import AdminGallery from "@/components/admin/AdminGallery";
+import AdminLandingPages from "@/components/admin/AdminLandingPages";
 
 // Placeholder components for sections
 const AdminOverview = () => {
@@ -107,6 +109,7 @@ const Admin = () => {
     const navItems = [
         { label: "Overview", icon: LayoutDashboard, path: "/admin" },
         { label: "Courses", icon: BookOpen, path: "/admin/courses" },
+        { label: "Landing Pages", icon: LayoutTemplate, path: "/admin/landing-pages" },
         { label: "Testimonials", icon: Users, path: "/admin/testimonials" },
         { label: "Hiring Partners", icon: Briefcase, path: "/admin/partners" },
         { label: "Gallery", icon: ImageIcon, path: "/admin/gallery" },
@@ -177,6 +180,7 @@ const Admin = () => {
                         <Routes>
                             <Route index element={<AdminOverview />} />
                             <Route path="courses" element={<AdminCourses />} />
+                            <Route path="landing-pages/*" element={<AdminLandingPages />} />
                             <Route path="testimonials" element={<AdminTestimonials />} />
                             <Route path="partners" element={<AdminHiringPartners />} />
                             <Route path="gallery" element={<AdminGallery />} />

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Phone, Mail, Facebook, Twitter, Instagram, Youtube, Linkedin, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import { getCourseLandingPath } from "@/content/courses/links";
 
 const Footer = () => {
   const [courseTitles, setCourseTitles] = useState<string[]>([]);
@@ -43,14 +45,28 @@ const Footer = () => {
             <div className="grid grid-cols-2 gap-x-8 gap-y-4">
               {courses.map((column, colIdx) => (
                 <ul key={colIdx} className="space-y-4">
-                  {column.map((course) => (
-                    <li key={course} className="flex items-center gap-2 group cursor-pointer">
-                      <ArrowRight className="w-4 h-4 text-[#D4AF37] transition-transform group-hover:translate-x-1" />
-                      <span className="text-white/70 group-hover:text-white text-sm transition-colors">
-                        {course}
-                      </span>
-                    </li>
-                  ))}
+                  {column.map((course) => {
+                    const path = getCourseLandingPath(course);
+                    const row = (
+                      <>
+                        <ArrowRight className="w-4 h-4 text-[#D4AF37] transition-transform group-hover:translate-x-1" />
+                        <span className="text-white/70 group-hover:text-white text-sm transition-colors">
+                          {course}
+                        </span>
+                      </>
+                    );
+                    return (
+                      <li key={course}>
+                        {path ? (
+                          <Link to={path} className="flex items-center gap-2 group">
+                            {row}
+                          </Link>
+                        ) : (
+                          <span className="flex items-center gap-2 group">{row}</span>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               ))}
             </div>

@@ -50,6 +50,49 @@ export const ROUTES = [
         description:
             "Job-ready training programs at Fortune Innovatives, Tiruppur. UI/UX Design, Full Stack Development, Graphic Design, Textile & Garment Design, Packaging Design, Video Editing, Fashion CADD, and Tally Prime — with 98%+ placement support.",
     },
+    // ── Course landing pages (content: src/content/courses/*.ts) ──────────
+    {
+        path: "/courses/ui-ux-design",
+        title: "UI/UX Design Course in Tiruppur | Job-Ready Program | Fortune Innovatives",
+        description:
+            "Become a job-ready UI/UX designer with zero design background. Mentor-led Figma, prototyping and portfolio program with 1:1 feedback and placement support at Fortune Innovatives, Tiruppur.",
+    },
+    {
+        path: "/courses/digital-marketing",
+        title: "Digital Marketing Course in Tiruppur | SEO, Google Ads & Meta Ads | Fortune Innovatives",
+        description:
+            "Become a job-ready digital marketer with no prior experience. Mentor-led SEO, Google Ads, Meta Ads and analytics program with live campaigns, 1:1 feedback and placement support at Fortune Innovatives, Tiruppur.",
+    },
+    {
+        path: "/courses/fashion-cadd",
+        title: "CAD Design Course in Tiruppur | AutoCAD, SolidWorks & Fusion 360 | Fortune Innovatives",
+        description:
+            "Become a job-ready CAD designer even if you have never opened AutoCAD. Mentor-led drafting, 3D modelling and GD&T program with live projects, 1:1 feedback and placement support at Fortune Innovatives, Tiruppur.",
+    },
+    {
+        path: "/courses/textile-garment-design",
+        title: "Textile & Garment Design Course in Tiruppur | Pattern Making & CLO 3D | Fortune Innovatives",
+        description:
+            "Become a job-ready textile and garment designer even if you can't sketch. Mentor-led pattern making, draping, Illustrator and CLO 3D program with live projects, 1:1 feedback and placement support at Fortune Innovatives, Tiruppur.",
+    },
+    {
+        path: "/courses/packaging-design",
+        title: "Packaging Design Course in Tiruppur | Dielines, Illustrator & Photoshop | Fortune Innovatives",
+        description:
+            "Become a job-ready package designer even if you can't sketch. Mentor-led Illustrator, Photoshop, structural dielines and print production program with live projects, 1:1 feedback and placement support at Fortune Innovatives, Tiruppur.",
+    },
+    {
+        path: "/courses/graphic-designing",
+        title: "Graphic Design Course in Tiruppur | Photoshop, Illustrator & Branding | Fortune Innovatives",
+        description:
+            "Become a job-ready branding and graphic designer even if you have never designed a logo. Mentor-led Photoshop, Illustrator and InDesign program with live projects, 1:1 feedback and placement support at Fortune Innovatives, Tiruppur.",
+    },
+    {
+        path: "/courses/video-editing",
+        title: "Video Editing Course in Tiruppur | Premiere Pro, After Effects & DaVinci | Fortune Innovatives",
+        description:
+            "Become a job-ready video editor even if you have never edited a video. Mentor-led Premiere Pro, After Effects and DaVinci Resolve program with live projects, 1:1 feedback and placement support at Fortune Innovatives, Tiruppur.",
+    },
     {
         path: "/why-us",
         title: "Why Fortune Innovatives — ISO-Certified Institute in Tiruppur",

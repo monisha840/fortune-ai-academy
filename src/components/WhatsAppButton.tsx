@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 
-const WhatsAppButton = () => {
+const WhatsAppButton = ({ hideOnMobile = false }: { hideOnMobile?: boolean }) => {
     return (
         <motion.a
             href="https://wa.me/919952270424" // Using the number from Footer
@@ -11,7 +11,7 @@ const WhatsAppButton = () => {
             transition={{ duration: 0.5, delay: 1 }}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center shadow-[0_4px_12px_rgba(37,211,102,0.4)] hover:shadow-[0_6px_16px_rgba(37,211,102,0.6)] border border-[#25D366]/30 transition-shadow cursor-pointer group"
+            className={`fixed bottom-6 right-6 z-50 w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center shadow-[0_4px_12px_rgba(37,211,102,0.4)] hover:shadow-[0_6px_16px_rgba(37,211,102,0.6)] border border-[#25D366]/30 transition-shadow cursor-pointer group ${hideOnMobile ? "max-md:hidden" : ""}`}
             aria-label="Chat on WhatsApp"
         >
             {/* WhatsApp Icon SVG */}

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { courses as initialCourses } from "@/lib/constants";
 import { supabase } from "@/lib/supabase";
+import { applyPathFor, getCourseLandingPath } from "@/content/courses/links";
 
 const CourseSection = ({ preview = false }: { preview?: boolean }) => {
   const [courses, setCourses] = useState<any[]>(initialCourses);
@@ -50,6 +51,8 @@ const CourseSection = ({ preview = false }: { preview?: boolean }) => {
   const filtered = activeCategory === "All" ? courses : courses.filter((c) => c.category === activeCategory);
   const displayedCourses = preview ? filtered.slice(0, 3) : filtered;
   const activeCourse = displayedCourses[activeIndex] || displayedCourses[0];
+  const landingPath = getCourseLandingPath(activeCourse?.title);
+  const enrollPath = activeCourse?.title ? applyPathFor(activeCourse.title) : "/apply";
 
   const handleCourseClick = (index: number) => {
     setActiveIndex(index);
@@ -191,9 +194,17 @@ const CourseSection = ({ preview = false }: { preview?: boolean }) => {
                 </div>
 
                 {/* Mobile Sticky CTA */}
-                <div className="p-4 bg-background border-t border-border mt-auto">
+                <div className="p-4 bg-background border-t border-border mt-auto space-y-3">
+                  {landingPath && (
+                    <Link
+                      to={landingPath}
+                      className="flex items-center justify-center gap-2 w-full py-3.5 border-2 border-accent text-accent rounded-2xl font-bold text-sm active:scale-[0.98] transition-all"
+                    >
+                      View Course Details <ArrowRight size={16} />
+                    </Link>
+                  )}
                   <Link
-                    to="/apply"
+                    to={enrollPath}
                     className="flex items-center justify-center gap-2 w-full py-4 bg-accent text-accent-foreground rounded-2xl font-bold text-sm gold-glow-box shadow-xl active:scale-[0.98] transition-all"
                   >
                     Enroll Now <ArrowRight size={16} />
@@ -311,12 +322,22 @@ const CourseSection = ({ preview = false }: { preview?: boolean }) => {
                     </div>
                   </div>
 
-                  <Link
-                    to="/apply"
-                    className="inline-flex items-center gap-2 bg-accent text-accent-foreground px-6 py-3 rounded-lg font-semibold hover-scale gold-glow-box transition-all duration-300"
-                  >
-                    Enroll Now <ArrowRight size={16} />
-                  </Link>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Link
+                      to={enrollPath}
+                      className="inline-flex items-center gap-2 bg-accent text-accent-foreground px-6 py-3 rounded-lg font-semibold hover-scale gold-glow-box transition-all duration-300"
+                    >
+                      Enroll Now <ArrowRight size={16} />
+                    </Link>
+                    {landingPath && (
+                      <Link
+                        to={landingPath}
+                        className="inline-flex items-center gap-2 border border-accent text-accent px-6 py-3 rounded-lg font-semibold hover:bg-accent/10 transition-colors duration-300"
+                      >
+                        View Course Details <ArrowRight size={16} />
+                      </Link>
+                    )}
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>

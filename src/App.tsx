@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { lazy, Suspense, Component, ReactNode } from "react";
 import WhatsAppButton from "./components/WhatsAppButton";
 import ScrollToTop from "./components/ScrollToTop";
@@ -15,6 +15,7 @@ const Apply = lazy(() => import("./pages/Apply"));
 const AdminLogin = lazy(() => import("./pages/AdminLogin"));
 const Admin = lazy(() => import("./pages/Admin"));
 const Courses = lazy(() => import("./pages/Courses"));
+const CourseLanding = lazy(() => import("./pages/CourseLanding"));
 const WhyUs = lazy(() => import("./pages/WhyUs"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Gallery = lazy(() => import("./pages/Gallery"));
@@ -78,11 +79,14 @@ const AppContent = () => {
   return (
     <>
       <ScrollToTop />
-      {!isAdminPath && <WhatsAppButton />}
+      {!isAdminPath && <WhatsAppButton hideOnMobile={/^\/courses\/[^/]+$/.test(location.pathname)} />}
       <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/courses" element={<Courses />} />
+          {/* Renamed: this page is the Fashion CADD course */}
+          <Route path="/courses/cad-design" element={<Navigate to="/courses/fashion-cadd" replace />} />
+          <Route path="/courses/:slug" element={<CourseLanding />} />
           <Route path="/why-us" element={<WhyUs />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/gallery" element={<Gallery />} />
